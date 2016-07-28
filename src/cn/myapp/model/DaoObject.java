@@ -22,8 +22,9 @@ public class DaoObject extends Model<DaoObject> {
 	 * @param tableName
 	 * @param primaryKey
 	 * @author teason
+	 * @return id from Insert obj .
 	 */
-	public void daoInsert(String tableName, String primaryKey) {
+	public long daoInsert(String tableName, String primaryKey) {
 		Record record = new Record() ;
 		UtilReflect utilSplit = new UtilReflect() ;
 		Field[] fieldList = utilSplit.getFields(this) ;
@@ -41,7 +42,9 @@ public class DaoObject extends Model<DaoObject> {
 			record.set(string, utilSplit.getFieldValueByName(string, this)) ;
 		}		
 		Db.save(tableName,primaryKey,record) ;
-	}	
+		long pkID = record.getLong(primaryKey) ;		
+		return pkID ;
+	}
 	
 	/**
 	 * dao fetch obj From Record . 
@@ -56,6 +59,9 @@ public class DaoObject extends Model<DaoObject> {
 			String string = field.getName() ;			
 			
 			if (string.equals("serialVersionUID")) {
+				continue ;
+			}
+			else if (string.equals("attrs")) {
 				continue ;
 			}
 			else if (field.getType() == int.class) {

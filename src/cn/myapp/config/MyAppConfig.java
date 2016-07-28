@@ -15,6 +15,7 @@ import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.mashape.unirest.http.Unirest;
 
 import cn.myapp.controller.ContentController;
+import cn.myapp.controller.KindController;
 
 /**
  * @author teason
@@ -36,7 +37,7 @@ public class MyAppConfig extends JFinalConfig {
 	@Override
 	public void configRoute(Routes me) {		
 		me.add("/content",ContentController.class) ;
-		
+		me.add("/kind",KindController.class) ;
 		
 	}
 	
@@ -45,7 +46,7 @@ public class MyAppConfig extends JFinalConfig {
 	 */
 	@Override
 	public void configPlugin(Plugins me) {
-		C3p0Plugin cp = new C3p0Plugin("jdbc:mysql://127.0.0.1:3306/pro?useUnicode=true&characterEncoding=utf8mb4_unicode_ci",
+		C3p0Plugin cp = new C3p0Plugin("jdbc:mysql://127.0.0.1:3306/pro?useUnicode=true&characterEncoding=utf8",
 				"root", "") ;
 		
 		me.add(cp) ;
