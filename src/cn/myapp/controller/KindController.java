@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 
 import cn.cms.model.Kind;
 import cn.myapp.model.ResultObj;
@@ -57,6 +59,30 @@ public class KindController extends Controller {
 		
 		ResultObj resultObj = new ResultObj(map) ;				
 		renderJson(resultObj) ;
+	}
+	
+	/**
+	 * 9 类型修改 改名字, 改顺序
+	 * @param	kindId
+	 * @param	name
+	 * @param	order
+	 * @return 	1001 / 0
+	 */
+	public void update() {
+		int kindId = getParaToInt("kindId") ;
+		String name = getPara("name") ;
+		int order = getParaToInt("order") ;
+		
+		Record record = Db.findById("kind", "kindId", kindId) ; 
+		record.set("kindId", kindId).set("name", name).set("order", order) ;
+		boolean bSuccess = Db.update("kind" , "kindId" , record) ;
+		
+		if (bSuccess) {
+			renderJson(new ResultObj("success")) ;
+		}
+		else {
+			renderJson(new ResultObj(null)) ;
+		}				
 	}
 	
 }
