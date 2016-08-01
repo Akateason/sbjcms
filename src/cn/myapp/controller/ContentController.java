@@ -37,7 +37,7 @@ public class ContentController extends Controller {
 		
 		String title = getPara("title", null) ;
 		if (title == null) {
-			ResultObj resultObj = new ResultObj("0", "标题不能为空", null) ;
+			ResultObj resultObj = new ResultObj("1", "标题不能为空", null) ;
 			renderJson(resultObj) ;
 			return ;
 		}
@@ -46,7 +46,7 @@ public class ContentController extends Controller {
 		String author = getPara("author","") ;
 		int kind = getParaToInt("kind",0) ;
 		if (kind == 0) {
-			ResultObj resultObj = new ResultObj("0", "类型不能为空", null) ;
+			ResultObj resultObj = new ResultObj("2", "类型不能为空", null) ;
 			renderJson(resultObj) ;
 			return ;
 		}
@@ -54,14 +54,14 @@ public class ContentController extends Controller {
 		String link = getPara("link", "") ;
 		String html = getPara("html", "") ;
 		if (link.equals("") && html.equals("") ) {			
-			ResultObj resultObj = new ResultObj("0", "链接与内容不能全为空", null) ;
+			ResultObj resultObj = new ResultObj("3", "链接与内容不能全为空", null) ;
 			renderJson(resultObj) ;
 			return ;
 		}
 		
 		String cover = getPara("cover", null) ;
 		if (cover == null) {
-			ResultObj resultObj = new ResultObj("0", "没有封面图", null) ;
+			ResultObj resultObj = new ResultObj("4", "没有封面图", null) ;
 			renderJson(resultObj) ; 
 			return ;
 		}
@@ -167,8 +167,7 @@ public class ContentController extends Controller {
 		}
 		else {
 			renderJson(new ResultObj(null)) ;
-		}
-		
+		}		
 	}
 	
 	/**
@@ -180,7 +179,7 @@ public class ContentController extends Controller {
 		long contentId = getParaToLong("contentId") ;		
 		Record record = Db.findById("content", "contentId", contentId) ;
 		if (record == null) {
-			ResultObj resultObj = new ResultObj("0", "无此content", null) ;
+			ResultObj resultObj = new ResultObj("1", "无此content", null) ;
 			renderJson(resultObj);
 			return ;
 		}

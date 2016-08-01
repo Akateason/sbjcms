@@ -22,6 +22,13 @@ public class KindController extends Controller {
 		String kindName = getPara("name") ;
 		int order = 1 ;
 		
+		long kindExist = Db.queryLong("select count(*) from pro.kind where name = ? ;", kindName) ;
+		if (kindExist > 0) {
+			ResultObj resultObj = new ResultObj("1", "类型已经存在", null) ;
+			renderJson(resultObj) ;			
+			return ;
+		}
+		
 		Kind kind = new Kind() ;
 		kind.setName(kindName); 
 		kind.setOrder(order);
@@ -38,10 +45,10 @@ public class KindController extends Controller {
 		else {
 			// fail
 			map.put("kindId", kindId) ;		
-			resultObj = new ResultObj("0", "插入错误", null) ;
+			resultObj = new ResultObj(null) ;
 		}
 		
-		renderJson(resultObj);
+		renderJson(resultObj) ;
 	}
 	
 	/**
@@ -82,7 +89,7 @@ public class KindController extends Controller {
 		}
 		else {
 			renderJson(new ResultObj(null)) ;
-		}				
+		}
 	}
 	
 }

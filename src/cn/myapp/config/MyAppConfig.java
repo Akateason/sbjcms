@@ -16,6 +16,7 @@ import com.mashape.unirest.http.Unirest;
 
 import cn.myapp.controller.ContentController;
 import cn.myapp.controller.KindController;
+import cn.myapp.controller.TagController;
 
 /**
  * @author teason
@@ -38,7 +39,7 @@ public class MyAppConfig extends JFinalConfig {
 	public void configRoute(Routes me) {		
 		me.add("/content",ContentController.class) ;
 		me.add("/kind",KindController.class) ;
-		
+		me.add("/tag",TagController.class) ;
 	}
 	
 	/* (non-Javadoc)
