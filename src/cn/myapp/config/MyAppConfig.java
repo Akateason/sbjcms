@@ -3,19 +3,16 @@
  */
 package cn.myapp.config;
 
-import java.io.IOException;
-import com.jfinal.config.Constants;
-import com.jfinal.config.Handlers;
-import com.jfinal.config.Interceptors;
-import com.jfinal.config.JFinalConfig;
-import com.jfinal.config.Plugins;
-import com.jfinal.config.Routes;
+import cn.cms.model.Images;
+import cn.myapp.controller.ContentController;
+import cn.myapp.controller.ImagesController;
+import cn.myapp.controller.KindController;
+import com.jfinal.config.*;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.mashape.unirest.http.Unirest;
 
-import cn.myapp.controller.ContentController;
-import cn.myapp.controller.KindController;
+import java.io.IOException;
 
 /**
  * @author teason
@@ -38,7 +35,8 @@ public class MyAppConfig extends JFinalConfig {
 	public void configRoute(Routes me) {		
 		me.add("/content",ContentController.class) ;
 		me.add("/kind",KindController.class) ;
-		
+		me.add("/images",ImagesController.class) ;
+
 	}
 	
 	/* (non-Javadoc)
@@ -52,6 +50,8 @@ public class MyAppConfig extends JFinalConfig {
 		me.add(cp) ;
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(cp) ;
 		me.add(arp) ;
+
+		arp.addMapping("Images","imagesId",Images.class);
 	}
 	
 	/* (non-Javadoc)
