@@ -91,8 +91,7 @@ public class ImagesController extends Controller {
             img.delete();
             rb=new ResultObj("success");
         }
-
-
+        
         renderJson(rb);
     }
 

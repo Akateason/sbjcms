@@ -4,21 +4,14 @@
 package cn.myapp.config;
 
 import cn.cms.model.Images;
-import cn.myapp.controller.ContentController;
-import cn.myapp.controller.ImagesController;
-import cn.myapp.controller.KindController;
+import cn.myapp.controller.*;
+
 import com.jfinal.config.*;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.mashape.unirest.http.Unirest;
 
-<<<<<<< HEAD
 import java.io.IOException;
-=======
-import cn.myapp.controller.ContentController;
-import cn.myapp.controller.KindController;
-import cn.myapp.controller.TagController;
->>>>>>> 061fb581ccbf5e280a3bc65ff95fe7d972672681
 
 /**
  * @author teason
@@ -57,7 +50,7 @@ public class MyAppConfig extends JFinalConfig {
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(cp) ;
 		me.add(arp) ;
 
-		arp.addMapping("Images","imagesId",Images.class);
+		arp.addMapping("Images","imagesId",Images.class) ;
 	}
 	
 	/* (non-Javadoc)

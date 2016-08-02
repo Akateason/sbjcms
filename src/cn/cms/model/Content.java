@@ -121,5 +121,27 @@ public class Content extends DaoObject {
 		this.isSlide = isSlide;
 	}
 	
+	public Content() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Content(Content content) {
+		this.setContentId(content.contentId);
+		this.setTitle(content.title);
+		this.setDesc(content.desc);
+		this.setAuthor(content.author);
+		this.setKind(content.kind);
+		this.setLink(content.link);
+		this.setHtml(content.html);
+		this.setCover(content.cover);
+		this.setCreatetime(content.createtime);
+		this.setUpdatetime(content.updatetime);
+		this.setSendtime(content.sendtime);
+		this.setDisplayType(content.displayType);
+		this.setReadNum(content.readNum);
+		this.setIsTop(content.isTop);
+		this.setIsRecommend(content.isRecommend);
+		this.setIsSlide(content.isSlide);			
+	}
 	
 }

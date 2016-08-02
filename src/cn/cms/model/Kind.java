@@ -32,7 +32,6 @@ public class Kind extends DaoObject {
 		this.order = order;
 	}
 	
-	
 	public static List<Kind> allKind() {
 		List<Record> listRecord = Db.find("select * from kind") ; 						
 		if (listRecord.size() != 0) {			
@@ -45,7 +44,5 @@ public class Kind extends DaoObject {
 		}
 		return null ;
 	}
-	
-	
 	
 }

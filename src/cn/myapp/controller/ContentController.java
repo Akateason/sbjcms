@@ -1,14 +1,20 @@
 package cn.myapp.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import cn.cms.model.CompleteContent;
 import cn.cms.model.Content;
+import cn.cms.model.Kind;
+import cn.cms.model.Tag;
+import cn.cms.model.TagRelation;
 import cn.myapp.model.ResultObj;
 import cn.myapp.util.XtDate;
 
@@ -193,5 +199,58 @@ public class ContentController extends Controller {
 			renderJson(new ResultObj(null)) ;
 		}
 	}
+	
+	/**
+	 * 内容 删除                                    h                删除关联的标签 , 删除关联的多图
+	 * @param contentId
+	 * @return success 1001 / fail 0
+	 */
+	public void del() {		
+		int contentId = getParaToInt("contentId",0) ;
+		if (contentId == 0) {
+			renderJson( new ResultObj("1", "contentId不能为空", null)) ;
+			return ;
+		}
+		
+		boolean bSuccess = Db.deleteById("content", "contentId", contentId) ;
+		if (bSuccess) {
+			renderJson(new ResultObj("从 content表 删除成功 !")) ;
+		}
+		else {
+			renderJson(new ResultObj(null)) ;
+		}		
+	}
+	
+	/**
+	 * 获取内容列表                           i/h
+	 * @param	kindId	 (当类型id==0, 返回"推荐"类型)	包含置顶对象 .
+	 * 
+	 */
+	public void list() {
+		int kindId = getParaToInt("kindId",-1) ;
+		if (kindId == -1) {
+			renderJson(new ResultObj("1", "kindId必传", null)) ;
+			return ;
+		}
+		else if (kindId == 0) {
+			// 推荐
+			List<Record> listRecord = Db.find("SELECT * FROM pro.content where isRecommend = 1 ;") ;
+			ArrayList<CompleteContent> completeContentList = new ArrayList<CompleteContent>() ;
+			for (Record record : listRecord) {
+				Content aContent = (Content)new Content().fetchFromRecord(record) ;									
+				List<Tag> taglist = TagRelation.getTaglistWithContentID(aContent.getContentId()) ;
+				
+				
+				CompleteContent 
+				list.add() ;
+			}
+		}
+		else if (kindId > 0) {
+			// by kindId
+			
+		}
+		
+	}
+	
 	
 }
