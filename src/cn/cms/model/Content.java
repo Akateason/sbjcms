@@ -1,7 +1,5 @@
 package cn.cms.model;
 
-import java.util.Date;
-
 import cn.myapp.model.DaoObject;
 
 @SuppressWarnings("serial")
@@ -15,9 +13,9 @@ public class Content extends DaoObject {
 	private String	link ;
 	private String	html ;
 	private String 	cover ;
-	private Date	createtime ;
-	private Date	updatetime ;
-	private Date	sendtime ;
+	private long	createtime ;
+	private long	updatetime ;
+	private long	sendtime ;
 	private	int		displayType ;
 	private int		readNum ;
 	private	int		isTop ;
@@ -72,22 +70,22 @@ public class Content extends DaoObject {
 	public void setCover(String cover) {
 		this.cover = cover;
 	}
-	public Date getCreatetime() {
+	public long getCreatetime() {
 		return createtime;
 	}
-	public void setCreatetime(Date createtime) {
+	public void setCreatetime(long createtime) {
 		this.createtime = createtime;
 	}
-	public Date getUpdatetime() {
+	public long getUpdatetime() {
 		return updatetime;
 	}
-	public void setUpdatetime(Date updatetime) {
+	public void setUpdatetime(long updatetime) {
 		this.updatetime = updatetime;
 	}
-	public Date getSendtime() {
+	public long getSendtime() {
 		return sendtime;
 	}
-	public void setSendtime(Date sendtime) {
+	public void setSendtime(long sendtime) {
 		this.sendtime = sendtime;
 	}
 	public int getDisplayType() {

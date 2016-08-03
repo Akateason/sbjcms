@@ -1,6 +1,9 @@
 package cn.cms.model;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.jfinal.plugin.activerecord.Record;
 
 @SuppressWarnings("serial")
 public class CompleteContent extends Content {
@@ -28,4 +31,17 @@ public class CompleteContent extends Content {
 		this.setImagelist(imagesList);
 	}
 
+	public static List<CompleteContent> getCompleteListWithRecordList(List<Record> recordList) {
+		List<CompleteContent> list_completeContent = new ArrayList<>() ;
+		
+		for (Record record : recordList) {
+			Content aContent = (Content)new Content().fetchFromRecord(record) ;	
+			List<Tag> taglist = TagRelation.getTaglistWithContentID(aContent.getContentId()) ;
+			List<Images> imageslist = Images.getAllByContentID(aContent.getContentId()) ;				
+			CompleteContent completeContent = new CompleteContent(aContent, taglist, imageslist) ;
+			list_completeContent.add(completeContent) ;
+		}
+		return list_completeContent ;
+	}
+	
 }

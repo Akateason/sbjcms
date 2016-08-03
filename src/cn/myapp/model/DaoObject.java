@@ -2,6 +2,7 @@ package cn.myapp.model;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Record;
@@ -13,9 +14,8 @@ import cn.myapp.util.reflection.UtilReflect;
  * @author teason
  *
  */
+@SuppressWarnings("serial")
 public class DaoObject extends Model<DaoObject> {
-	
-	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * dao Insert 
@@ -59,9 +59,6 @@ public class DaoObject extends Model<DaoObject> {
 			String string = field.getName() ;			
 			
 			if (string.equals("serialVersionUID")) {
-				continue ;
-			}
-			else if (string.equals("attrs")) {
 				continue ;
 			}
 			else if (field.getType() == int.class) {

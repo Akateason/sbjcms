@@ -35,4 +35,11 @@ public class XtDate {
 		return sdf.format(date) ;  
 	}
 	
+	public static long getTickFromDate(Date date) {
+		return date.getTime() / 1000 ;
+	}
+	
+	public static long getNowTick() {
+		return getTickFromDate(getNowDate()) ;
+	}
 }

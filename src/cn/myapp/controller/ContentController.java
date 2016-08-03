@@ -1,20 +1,16 @@
 package cn.myapp.controller;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
 import cn.cms.model.CompleteContent;
 import cn.cms.model.Content;
-import cn.cms.model.Kind;
-import cn.cms.model.Tag;
-import cn.cms.model.TagRelation;
 import cn.myapp.model.ResultObj;
 import cn.myapp.util.XtDate;
 
@@ -29,7 +25,7 @@ public class ContentController extends Controller {
 	@param  String	link ;
 	@param	String	html ;
 	@param  String 	cover ;	
-	@param	Date	sendtime ;	yyyy-MM-dd HH:mm:ss
+	@param	Date	sendtime ;	tick
 	@param	int		displayType ;
 	@param	int		isTop ;
 	@param	int 	isRecommend ;
@@ -71,10 +67,10 @@ public class ContentController extends Controller {
 			renderJson(resultObj) ; 
 			return ;
 		}
-		
-		Date now = XtDate.getNowDate() ;		
-		String sendtime = getPara("sendtime",null) ;
-		Date dateSendtime = sendtime != null ? XtDate.getDateWithString(sendtime) : now ;
+				
+		Long sendtime = getParaToLong("sendtime" , null) ; 
+		long now = XtDate.getNowTick() ;
+		long dateSendtime = sendtime != null ? sendtime : now ;
 				
 		int displayType = getParaToInt("displayType", 0) ;
 		
@@ -146,7 +142,7 @@ public class ContentController extends Controller {
 		String link		= getPara("link", "") ;
 		String html		= getPara("html", "") ;
 		String cover	= getPara("cover","") ;
-		String sendtime = getPara("sendtime",null) ;
+		Long sendtime = getParaToLong("sendtime",null) ;
 		int displayType = getParaToInt("displayType",0) ;
 		int isTop		= getParaToInt("isTop",0) ;
 		int isRecommend	= getParaToInt("isRecommend",0) ;
@@ -158,12 +154,11 @@ public class ContentController extends Controller {
 		.set("displayType",displayType).set("isTop", isTop)
 		.set("isRecommend", isRecommend).set("isSlide", isSlide) ;
 		
-		if (sendtime != null) {
-			Date dateSend	= XtDate.getDateWithString(sendtime) ;		
-			record.set("sendtime", dateSend) ;
+		if (sendtime != null) {					
+			record.set("sendtime", sendtime) ;
 		}
 		
-		Date now = XtDate.getNowDate() ;
+		long now = XtDate.getNowTick() ;
 		record.set("updatetime", now) ;
 
 		boolean bSuccess = Db.update("content", "contentId", record) ;
@@ -222,35 +217,71 @@ public class ContentController extends Controller {
 	}
 	
 	/**
-	 * 获取内容列表                           i/h
-	 * @param	kindId	 (当类型id==0, 返回"推荐"类型)	包含置顶对象 .
+	 * 后台 获取内容列表                           i/h
+	 * @param	kind		如果为0, 返回全部分类
+	 * @param	sendtime	如果为0, 返回最新的 	tick
+	 * @param	size		默认 20
+	 * @return	list
+	 * @throws ParseException 
+	 */
+	public void list() throws ParseException {
+		Gson gson = new Gson() ;
+		int kindId = getParaToInt("kind", 0) ;
+		Long sendtime = getParaToLong("sendtime", null) ;		
+		long dateSendtime = (sendtime == null) ? XtDate.getNowTick() : sendtime ;
+		int size = getParaToInt("size", 20) ;
+		
+		List<Record> listRecord  = null ;
+		if (kindId == 0) {						
+			listRecord = Db.find("select * from content where createtime < ? order by createtime desc limit ? ;" , dateSendtime , size) ;																	
+		}
+		else {
+			listRecord = Db.find("select * from content where kind = ? and createtime < ? order by createtime desc limit ? ;" , kindId , dateSendtime , size) ;
+		}
+		
+		List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord) ;			
+		String jsonStr = gson.toJson(list_completeContent) ;
+		@SuppressWarnings("unchecked")
+		List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class) ;			
+		HashMap<String, Object> map = new HashMap<>() ;
+		map.put("list", list) ;
+		renderJson(new ResultObj(map)) ;
+	}
+	
+	/**
+	 * APP获取内容列表
+	 * @param : kind 		当kind==0, 返回"推荐"isRecomment类型
+	 * @param : sendtime  	如果为0, 返回最新的 	tick
+	 * @param	size		默认 20
 	 * 
 	 */
-	public void list() {
-		int kindId = getParaToInt("kindId",-1) ;
+	public void alist() {
+		Gson gson = new Gson() ;
+		int kindId = getParaToInt("kind",-1) ;
 		if (kindId == -1) {
-			renderJson(new ResultObj("1", "kindId必传", null)) ;
+			renderJson(new ResultObj("1", "kind必传", null)) ;
 			return ;
 		}
-		else if (kindId == 0) {
+		
+		List<Record> listRecord = null ;
+		if (kindId == 0) {
 			// 推荐
-			List<Record> listRecord = Db.find("SELECT * FROM pro.content where isRecommend = 1 ;") ;
-			ArrayList<CompleteContent> completeContentList = new ArrayList<CompleteContent>() ;
-			for (Record record : listRecord) {
-				Content aContent = (Content)new Content().fetchFromRecord(record) ;									
-				List<Tag> taglist = TagRelation.getTaglistWithContentID(aContent.getContentId()) ;
-				
-				
-				CompleteContent 
-				list.add() ;
-			}
+//			listRecord = Db.find("SELECT * FROM pro.content where isRecommend = 1 ;") ;
+			
 		}
 		else if (kindId > 0) {
 			// by kindId
-			
+//			listRecord = Db.find("SELECT * FROM pro.content where kind = ? ;", kindId) ;
 		}
 		
+		List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord) ;			
+		String jsonStr = gson.toJson(list_completeContent) ;
+		@SuppressWarnings("unchecked")
+		List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class) ;			
+		HashMap<String, Object> map = new HashMap<>() ;
+		map.put("list", list) ;
+		renderJson(new ResultObj(map)) ;
+		
 	}
-	
 	
 }
