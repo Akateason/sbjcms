@@ -283,5 +283,55 @@ public class ContentController extends Controller {
 		renderJson(new ResultObj(map)) ;
 		
 	}
+
+	/**
+	 * 根据标题获取内容列表
+	 * @param   title
+	 * @param	size		默认 20
+	 * @return  list
+	 *
+	 */
+	public void searchByTitle(){
+		Gson gson = new Gson() ;
+		String title=getPara("title");
+		ResultObj rb=null;
+		if(title.isEmpty()){
+			rb=new ResultObj("0","标题不能为空",null);
+		}else{
+			List<Record> listRecord=Db.find("select * from content where title like '%"+title+"%'");
+			List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord) ;
+			String jsonStr = gson.toJson(list_completeContent) ;
+			List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class) ;
+			HashMap<String, Object> map = new HashMap<>() ;
+			map.put("list", list) ;
+			rb=new ResultObj(map);
+		}
+		renderJson(rb);
+	}
+
+	/**
+	 * 根据标签获取内容列表
+	 * @param   title
+	 * @param	size		默认 20
+	 * @return  list
+	 *
+	 */
+	public void searchByTag(){
+		Gson gson = new Gson() ;
+		String tag=getPara("tag");
+		ResultObj rb=null;
+		if(tag.isEmpty()){
+			rb=new ResultObj("0","标题不能为空",null);
+		}else{
+			List<Record> listRecord=Db.find("select c.* from content as c where contentId in (select contentId from tagRelation as tr left join tag as t on t.tagId=tr.tagId where t.name like '%"+tag+"%')");
+			List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord) ;
+			String jsonStr = gson.toJson(list_completeContent) ;
+			List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class) ;
+			HashMap<String, Object> map = new HashMap<>() ;
+			map.put("list", list) ;
+			rb=new ResultObj(map);
+		}
+		renderJson(rb);
+	}
 	
 }
