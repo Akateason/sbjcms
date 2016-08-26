@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.cms.model.Kind;
 import com.google.gson.Gson;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -344,7 +345,7 @@ public class ContentController extends Controller {
 	 */
 	public void searchByTitle(){
 		Gson gson = new Gson() ;
-		String title=getPara("title");
+		String title=getPara("keyword");
 		ResultObj rb=null;
 		if(title.isEmpty()){
 			rb=new ResultObj("0","标题不能为空",null);
@@ -370,7 +371,7 @@ public class ContentController extends Controller {
 	 */
 	public void searchByTag(){
 		Gson gson = new Gson() ;
-		String tag=getPara("tag");
+		String tag=getPara("keyword");
 		ResultObj rb=null;
 		if(tag.isEmpty()){
 			rb=new ResultObj("0","标题不能为空",null);
@@ -394,6 +395,16 @@ public class ContentController extends Controller {
 		@SuppressWarnings("unchecked")
 		List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class) ;			
 		return list ;
+	}
+
+	public void  index(){
+		render("contentList.html");
+	}
+
+	public void addH(){
+		List<Kind> list = Kind.allKind() ;
+		setAttr("kinds",list);
+		render("addContent.html");
 	}
 	
 }

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>类型列表</title>
+</head>
+<body>
+<a href="/kind/addH">添加新类型</a>
+<table border="1" width="100%">
+    <#list list as kind>
+        <tr>
+            <td>${kind.name}</td>
+            <td width="50" style="text-align:center"><a href="/kind/addH?kindId=${kind.kindId}">修改</a> </td>
+        </tr>
+    </#list>
+</table>
+<a href="/kind/addH">添加新类型</a>
+</body>
+</html>

@@ -91,5 +91,22 @@ public class KindController extends Controller {
 			renderJson(new ResultObj(null)) ;
 		}
 	}
-	
+
+	public  void index(){
+		List<Record> list = Db.find("select * from kind") ;
+		setAttr("list",list);
+		render("kindList.html");
+	}
+
+	public void addH(){
+		String kindId=getPara("kindId");
+		if(kindId!=null) {
+			List<Record> list=Db.find("select * from kind where kindId=?",kindId);
+			if(list.size()>=1){
+				setAttr("kind",list.get(0));
+			}
+		}else {
+		}
+		render("addkind.html");
+	}
 }

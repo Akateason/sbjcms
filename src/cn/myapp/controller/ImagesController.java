@@ -51,7 +51,7 @@ public class ImagesController extends Controller {
                         Gson gson=new Gson();
                         JsonElement el=(JsonElement)it.next();
                         listImg lImg=gson.fromJson(el,listImg.class);
-                        new Images().set("img",lImg.getimgUrl()).set("order",lImg.getorder()).set("contentId",contentId).save();
+                        new Images().set("img",lImg.getimg()).set("order",lImg.getorder()).set("contentId",contentId).save();
                         rb=new ResultObj("success");
                     }
                 }
@@ -96,14 +96,14 @@ public class ImagesController extends Controller {
     }
 
     private class listImg{
-        private String imgUrl;
+        private String img;
         private int order;
 
-        public String getimgUrl() {
-            return imgUrl;
+        public String getimg() {
+            return img;
         }
-        public void setimgUrl(String imgUrl) {
-            this.imgUrl = imgUrl;
+        public void setimg(String img) {
+            this.img = img;
         }
         public int getorder() {
             return order;

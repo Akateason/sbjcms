@@ -7,6 +7,7 @@ import cn.cms.model.Images;
 import cn.myapp.controller.*;
 
 import com.jfinal.config.*;
+import com.jfinal.ext.handler.ContextPathHandler;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.mashape.unirest.http.Unirest;
@@ -24,7 +25,8 @@ public class MyAppConfig extends JFinalConfig {
 	@Override
 	public void configConstant(Constants me) {
 		me.setDevMode(true);
-		me.setEncoding("utf-8");		
+		me.setEncoding("utf-8");
+		me.setBaseViewPath("/WEB-INF/view");
 	}
 
 	/* (non-Javadoc)
@@ -32,10 +34,11 @@ public class MyAppConfig extends JFinalConfig {
 	 */
 	@Override
 	public void configRoute(Routes me) {		
-		me.add("/content",ContentController.class) ;
-		me.add("/kind",KindController.class) ;
+		me.add("/content",ContentController.class,"/") ;
+		me.add("/kind",KindController.class,"/") ;
 		me.add("/images",ImagesController.class) ;
-		me.add("/tag",TagController.class) ;
+		me.add("/tag",TagController.class,"/") ;
+		me.add("/file",FileController.class,"/");
 	}
 	
 	/* (non-Javadoc)
@@ -66,7 +69,7 @@ public class MyAppConfig extends JFinalConfig {
 	 */
 	@Override
 	public void configHandler(Handlers me) {
-		
+		me.add(new ContextPathHandler("ctx"));
 	}
 	
 	@Override

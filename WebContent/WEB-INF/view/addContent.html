@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加内容</title>
+    <link rel="stylesheet" href="${ctx}/css/uploadify.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${ctx}/css/jquery-ui.css">
+    <style>
+        #manyPicsContainer li{
+            float: left;
+            margin: 10px;
+            position: relative;
+        }
+        #manyPicsContainer li:hover .del{
+            display: block;
+        }
+        #manyPicsContainer li .del{
+            background: url("http://7xl8h9.com1.z0.glb.clouddn.com/20160816processP.png") no-repeat;
+            background-size: 100%;
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            right: -12px;
+            top: -12px;
+            display: none;
+            cursor: pointer;
+        }
+        .uploadify{
+            clear: both;
+        }
+        #coverPicContainer img{
+            margin:0 0 10px 10px;
+        }
+        .tagsContainer{
+            cursor: text;
+            height: auto;
+            min-height: 35px;
+        }
+        #ipt_tags{
+            border:0 none;
+            outline:none;
+        }
+        .tag{
+            display: inline-block;
+            margin-right: 10px;
+            background: #ee7407;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 2px;
+            position: relative;
+        }
+        .tag .del{
+            padding-left: 10px;
+            color: #fff;
+            text-decoration:none;
+        }
+        .tag .del:hover{
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form class="form-horizontal" id="form_content">
+                <div class="form-group">
+                    <label for="title" class="col-md-2 control-label">标题:</label>
+                    <div class="col-md-10">
+                        <input type="text" name="" id="title" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="author" class="col-md-2 control-label">作者:</label>
+                    <div class="col-md-10"><input type="text" name="" id="author" class="form-control"></div>
+                </div>
+                <div class="form-group">
+                    <label for="author" class="col-md-2 control-label">描述:</label>
+                    <div class="col-md-10"><textarea type="text" name="" id="desc" class="form-control"></textarea></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="kind">类型:</label>
+                    <div class="col-md-10">
+                        <select name="" id="kind" class="form-control">
+                            <#list kinds as kind>
+                                <option value="${kind.kindId}">${kind.name}</option>
+                            </#list>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">标签:</label>
+                    <div class="col-md-10">
+                        <div class="tagsContainer form-control">
+                            <input type="text" contenteditable="true" id="ipt_tags">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="author" class="col-md-2 control-label">内容:</label>
+                    <div class="col-md-10"><textarea type="text" name="" id="html" class="form-control" rows="6"></textarea></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="link">外链:</label>
+                    <div class="col-md-10"><input type="text" name="" id="link" class="form-control"></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">封面:</label>
+                    <div class="col-md-10">
+                        <div id="coverPicContainer"></div>
+                        <input type="file" id="cover_file">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">多图展示:</label>
+                    <div class="col-md-10">
+                        <div id="manyPicsContainer">
+                            <ul class="list-unstyled">
+                            </ul>
+                        </div>
+                        <input type="file" id="mPics_file" style="clear: both;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="displayType">展示形式:</label>
+                    <div class="col-md-10">
+                        <select name="" id="displayType" class="form-control">
+                            <option value="0">普通</option>
+                            <option value="1">大图</option>
+                            <option value="2">多图</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="" id="isTop"> 置顶
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="" id="isRecommend"> 推荐
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="" id="isSlide"> 幻灯片
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-10">
+                        <input type="submit" value="保存" class="btn-lg btn btn-primary btn-block">
+                    </div>
+                </div>
+        </form>
+    </div>
+</body>
+<script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
+<script src="${ctx}/scripts/jquery.uploadify.js"></script>
+<script src="${ctx}/scripts/jquery-ui.js"></script>
+<script>
+    $("#cover_file").uploadify({
+        swf                 : '${ctx}/scripts/uploadify.swf',
+        uploader            : '/file/upload',
+        multi               : 'false',
+        removeTimeout       : 0,
+        onUploadSuccess     : function(file,data,response){
+            var img=$("#coverPicContainer img");
+            if(img.length==0){
+                $("#coverPicContainer").append("<img src='' width='100' height='100' id='cover'>");
+                img=$("#coverPicContainer img");
+            }
+            img.attr("src",data);
+        }
+    })
+    $("#mPics_file").uploadify({
+        swf                 : '${ctx}/scripts/uploadify.swf',
+        uploader            : '/file/upload',
+        removeTimeout       : 0,
+        onUploadSuccess     : function(file,data,response){
+            $("#manyPicsContainer ul").append("<li><img src='"+data+"' width='150' height='150'><i class='del'></i></li>")
+            $("#manyPicsContainer ul").sortable();
+        }
+    })
+    $("#manyPicsContainer").delegate(".del","click",function(){
+        $(this).closest("li").remove();
+    })
+
+
+    var tags_remote=[];
+    $("#ipt_tags").autocomplete({
+        source:function(request,response){
+            $.ajax("/tag/search",{
+                data:{word:request.term},
+                success:function(data){
+                    tags_remote=[];
+                    tags_remote_o=[];
+                    var tagList=data.returnData.tagList;
+                    if(tagList.length==0){
+                        response([]);
+                        return;
+                    }else{
+                        for(var i=0;i<tagList.length;i++){
+                            tags_remote.push({value:tagList[i].name,id:tagList[i].tagId});
+                        }
+                        response(tags_remote);
+                        return;
+                    }
+                }
+            })
+        },
+        select:function(event,ui){
+            tags.add(ui.item.value, ui.item.id);
+            $("#ipt_tags").val("");
+            return false;
+        }
+    })
+    $(".tagsContainer").click(function(){
+        $("#ipt_tags").focus();
+    })
+    $("#ipt_tags").keydown(function(e){
+        if(e.keyCode==13){//回车键
+            tags.add($(this).val());
+            $(this).val("");
+        }
+    });
+    var tags={
+        tagExist:[],
+        init:function(){
+            $(".tagsContainer").delegate(".del","click",function(){
+                $(this).closest(".tag").remove();
+            })
+        },
+        add:function(name,id) {
+            if(!id) {
+                $.ajax("/tag/add",{
+                    data:{name:$("#ipt_tags").val()},
+                    success:function(data){
+                        this.add(name,data.returnData.tagId);
+                    }.bind(this)
+                })
+            }else{
+                if (this.checkTagExist(name)) {
+                    $("<div class='tag' data-id='" + id + "'>" + name + "<a class='del' href='javascript:;'>x</a></div>").insertBefore("#ipt_tags");
+                    this.tagExist.push(name);
+                }
+            }
+        },
+        checkTagExist:function(name){
+            if(name==""){
+                return false;
+            }
+            for(var i=0;i<this.tagExist.length;i++){
+                if(this.tagExist[i]==name){
+                    alert("标签已添加");
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    tags.init();
+
+
+    $("#form_content").submit(function(e){
+        e.preventDefault();
+        var content={
+            title:$("#title").val(),
+            author:$("#author").val(),
+            desc:$("#desc").val(),
+            kind:$("#kind").val(),
+            html:$("#html").val(),
+            link:$("#link").val(),
+            cover:$("#cover").attr("src"),
+            displayType:$("#displayType").val(),
+            isTop:$("#isTop").val()=="on"?1:0,
+            isRecommend:$("#isRecommend").val()=="on"?1:0,
+            isSlide:$("#isSlide").val()=="on"?1:0
+        }
+        var manyPics=[];
+        $("#manyPicsContainer img").each(function(i,j){
+            manyPics.push({img:$(j).attr("src"),order:(i+1)});
+        })
+        $.ajax("/content/add",{
+            method:"POST",
+            data:content,
+            success:function(data){
+                var contentId=data.returnData.contentId;
+                $.ajax("/images/add",{
+                    method:"POST",
+                    data:{list:JSON.stringify(manyPics),contentId:contentId},
+                    success:function(data){
+                        console.log(data);
+                    }
+                })
+                $(".tag").each(function(i,j){
+                    $.ajax("/tag/addBind",{
+                        data:{contentId:contentId,tagId:$(j).attr("data-id")},
+                        success:function(data){
+                            console.log(data);
+                        }
+                    })
+                })
+            }
+        })
+        return false;
+    })
+</script>
+</html>
