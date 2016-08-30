@@ -1,20 +1,21 @@
 package cn.cms.model;
 
+import com.jfinal.plugin.activerecord.Record;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.jfinal.plugin.activerecord.Record;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class CompleteContent extends Content {
 	
-	private List<Tag> taglist ;
+	private List<Map> taglist ;
 	private List<Images> imagelist ;
 	
-	public List<Tag> getTaglist() {
+	public List<Map> getTaglist() {
 		return taglist;
 	}
-	public void setTaglist(List<Tag> taglist) {
+	public void setTaglist(List<Map> taglist) {
 		this.taglist = taglist;
 	}
 	public List<Images> getImagelist() {
@@ -24,7 +25,7 @@ public class CompleteContent extends Content {
 		this.imagelist = imagelist;
 	}
 	
-	public CompleteContent(Content content , List<Tag> taglist , List<Images> imagesList) {
+	public CompleteContent(Content content , List<Map> taglist , List<Images> imagesList) {
 		// TODO Auto-generated constructor stub
 		super(content) ;
 		this.setTaglist(taglist);
@@ -33,7 +34,7 @@ public class CompleteContent extends Content {
 	
 	public static CompleteContent getCompleteContentWithRecord(Record record) {
 		Content aContent = (Content)new Content().fetchFromRecord(record) ;	
-		List<Tag> taglist = TagRelation.getTaglistWithContentID(aContent.getContentId()) ;
+		List<Map> taglist = TagRelation.getTaglistWithContentID(aContent.getContentId()) ;
 		List<Images> imageslist = Images.getAllByContentID(aContent.getContentId()) ;				
 		CompleteContent completeContent = new CompleteContent(aContent, taglist, imageslist) ;
 		return completeContent ;

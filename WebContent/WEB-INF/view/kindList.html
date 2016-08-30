@@ -3,17 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>类型列表</title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
 </head>
 <body>
 <a href="/kind/addH">添加新类型</a>
-<table border="1" width="100%">
-    <#list list as kind>
+<table id="kindList" class="table table-striped table-bordered" style="width: 75%;">
+    <thead>
         <tr>
-            <td>${kind.name}</td>
-            <td width="50" style="text-align:center"><a href="/kind/addH?kindId=${kind.kindId}">修改</a> </td>
+            <th style="text-align: center;">#</th>
+            <th>名称</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    <#list list as kind>
+        <tr data-order="${kind.kindOrder}" data-id="${kind.kindId}">
+            <td width="10%" style="text-align: center;">${kind_index+1}</td>
+            <td width="85%">${kind.name}</td>
+            <td width="5%" style="text-align:center"><a href="/kind/addH?kindId=${kind.kindId}">修改</a> </td>
         </tr>
     </#list>
+    </tbody>
 </table>
 <a href="/kind/addH">添加新类型</a>
+
+<script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
+<script src="${ctx}/scripts/jquery-ui.js"></script>
+<script>
+    $("#kindList tbody").sortable({
+        update:function(event,ui){
+            var item=ui.item;
+            var items;
+            var orderStart=0
+            if($(item).prev().length) {
+                var prevItem = $(item).prev();
+                orderStart = $(prevItem).attr("data-order");
+                items = $(prevItem).nextAll();
+            }else{
+                items=$("#kindList tbody tr");
+            }
+            for(var i=0;i<items.length;i++){
+                var kindId=$(items[i]).attr("data-id");
+                var name=$(items[i]).find("td:eq(1)").text();
+                var order=parseInt(orderStart)+i+1;
+                $(items[i]).attr("data-order",order);
+                $.ajax("/kind/update",{
+                    data:{kindId:kindId,name:name,kindOrder:order},
+                    success:function(data){
+                        console.log(data);
+                    }
+                })
+            }
+            changeListIndex();
+        }
+    })
+
+    function changeListIndex(){
+        $("#kindList tbody tr").each(function(i,j){
+            $(j).find("td:eq(0)").text(i+1);
+        })
+    }
+</script>
 </body>
 </html>

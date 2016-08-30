@@ -1,12 +1,11 @@
 package cn.cms.model;
 
 import cn.myapp.model.DaoObject;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
 
 /**
  * Created by apple on 16/7/29.
@@ -19,7 +18,7 @@ public class Images extends DaoObject
 	private int 	imagesId ;
 	private int 	contentId ;
 	private String	img ;
-	private int 	order ;
+	private int 	imageOrder ;
     public int getImagesId() {
 		return imagesId;
 	}
@@ -38,21 +37,22 @@ public class Images extends DaoObject
 	public void setImg(String img) {
 		this.img = img;
 	}
-	public int getOrder() {
-		return order;
+	public int getimageOrder() {
+		return imageOrder;
 	}
-	public void setOrder(int order) {
-		this.order = order;
+	public void setimageOrder(int imageOrder) {
+		this.imageOrder = imageOrder;
 	}
 
 	public Images getOneByID(int id) {
 		Record record = Db.findById("images", "imagesId", id) ;
 		return (Images)new Images().fetchFromRecord(record) ;
     }
+
 	
     public static List<Images> getAllByContentID(int id) {
     	List<Images> listImages = new ArrayList<>() ;
-        List<Record> records= Db.find("select * from images where contentId = ?",id) ;
+        List<Record> records= Db.find("select * from images where contentId = ? order by imageOrder",id) ;
     	for (Record record : records) {
     		Images aiImages = (Images)new Images().fetchFromRecord(record) ;
     		listImages.add(aiImages) ;

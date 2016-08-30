@@ -31,7 +31,7 @@ public class KindController extends Controller {
 		
 		Kind kind = new Kind() ;
 		kind.setName(kindName); 
-		kind.setOrder(order);
+		kind.setKindOrder(order);
 		
 		long kindId = kind.daoInsert("kind", "kindId") ;
 		HashMap<String, Object> map = new HashMap<>() ;
@@ -78,10 +78,10 @@ public class KindController extends Controller {
 	public void update() {
 		int kindId = getParaToInt("kindId") ;
 		String name = getPara("name") ;
-		int order = getParaToInt("order") ;
+		int kindOrder = getParaToInt("kindOrder") ;
 		
 		Record record = Db.findById("kind", "kindId", kindId) ; 
-		record.set("kindId", kindId).set("name", name).set("order", order) ;
+		record.set("kindId", kindId).set("name", name).set("kindOrder", kindOrder) ;
 		boolean bSuccess = Db.update("kind" , "kindId" , record) ;
 		
 		if (bSuccess) {
@@ -93,7 +93,7 @@ public class KindController extends Controller {
 	}
 
 	public  void index(){
-		List<Record> list = Db.find("select * from kind") ;
+		List<Kind> list = Kind.allKind() ;
 		setAttr("list",list);
 		render("kindList.html");
 	}

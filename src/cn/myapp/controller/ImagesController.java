@@ -19,7 +19,7 @@ public class ImagesController extends Controller {
      *int     imagesId
      *int     contentId
      *string  img
-     *int     order
+     *int     imageOrder
      */
 
     public void add(){
@@ -51,7 +51,7 @@ public class ImagesController extends Controller {
                         Gson gson=new Gson();
                         JsonElement el=(JsonElement)it.next();
                         listImg lImg=gson.fromJson(el,listImg.class);
-                        new Images().set("img",lImg.getimg()).set("order",lImg.getorder()).set("contentId",contentId).save();
+                        new Images().set("img",lImg.getimg()).set("imageOrder",lImg.getorder()).set("contentId",contentId).save();
                         rb=new ResultObj("success");
                     }
                 }
@@ -72,7 +72,7 @@ public class ImagesController extends Controller {
                 rb=new ResultObj("0","排序序号不能为空",null);
             }else{
                 Images img=getModel(Images.class).getOneByID(Integer.parseInt(imgId));
-                img.set("order",Integer.parseInt(order)).update();
+                img.set("imageOrder",Integer.parseInt(order)).update();
                 rb=new ResultObj("success");
                 }
             }
@@ -94,6 +94,7 @@ public class ImagesController extends Controller {
         
         renderJson(rb);
     }
+
 
     private class listImg{
         private String img;

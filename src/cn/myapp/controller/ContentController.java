@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.cms.model.Images;
 import cn.cms.model.Kind;
 import com.google.gson.Gson;
 import com.jfinal.core.Controller;
@@ -405,6 +406,21 @@ public class ContentController extends Controller {
 		List<Kind> list = Kind.allKind() ;
 		setAttr("kinds",list);
 		render("addContent.html");
+	}
+
+	public void updateH(){
+		Gson gson = new Gson() ;
+		int contentId=getParaToInt("id" ,0);
+		Record record = Db.findFirst("select * from content where contentId = ? ;" , contentId) ;
+		if (record == null) {
+			ResultObj resultObj = new ResultObj("2", "contentId不存在", null) ;
+			renderJson(resultObj) ;
+			return ;
+		}
+		setAttr("content",gson.toJson(CompleteContent.getCompleteContentWithRecord(record)));
+		List<Kind> list = Kind.allKind() ;
+		setAttr("kinds",list);
+		render("updateContent.html");
 	}
 	
 }

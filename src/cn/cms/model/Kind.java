@@ -1,18 +1,18 @@
 package cn.cms.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import cn.myapp.model.DaoObject;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
-import cn.myapp.model.DaoObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class Kind extends DaoObject {
 	
 	private int kindId ;
 	private String name ;
-	private int order ;
+	private int kindOrder ;
 	public int getKindId() {
 		return kindId;
 	}
@@ -25,15 +25,15 @@ public class Kind extends DaoObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getOrder() {
-		return order;
+	public int getKindOrder() {
+		return kindOrder;
 	}
-	public void setOrder(int order) {
-		this.order = order;
+	public void setKindOrder(int order) {
+		this.kindOrder = order;
 	}
 	
 	public static List<Kind> allKind() {
-		List<Record> listRecord = Db.find("select * from kind") ; 						
+		List<Record> listRecord = Db.find("select * from kind order by kindOrder") ;
 		if (listRecord.size() != 0) {			
 			ArrayList<Kind> list = new ArrayList<>() ;
 			for (Record record : listRecord) {

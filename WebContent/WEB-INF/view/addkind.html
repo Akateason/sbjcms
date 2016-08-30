@@ -8,21 +8,37 @@
     <label for="name">名称:</label>
     <input type="text" name="name" id="name" value="${(kind.name)!}">
     <input type="hidden" name="kindId" id="kindId" value="${(kind.kindId)!}">
+    <input type="hidden" name="kindOrder" id="kindOrder" value="${(kind.kindOrder)!}">
     <a href="javascript:;" id="save">保存</a>
 <script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
 <script>
     $(function(){
         $("#save").click(function () {
-            $.ajax("/kind/add",{
-                data:{name:$("#name").val()},
-                success:function(data){
-                    if(data.returnCode="1001"){
-                        alert("添加成功!")
-                        window.location.href="/kind";
+            if($("#kindId").val().length){
+                $.ajax("/kind/update", {
+                    data: {
+                        name: $("#name").val(),
+                        kindId: $("#kindId").val(),
+                        kindOrder: $("#kindOrder").val()
+                    },
+                    success: function (data) {
+                        if (data.returnCode = "1001") {
+                            alert("修改成功!")
+                            window.location.href = "/kind";
+                        }
                     }
-                }
-            })
-
+                })
+            }else {
+                $.ajax("/kind/add", {
+                    data: {name: $("#name").val()},
+                    success: function (data) {
+                        if (data.returnCode = "1001") {
+                            alert("添加成功!")
+                            window.location.href = "/kind";
+                        }
+                    }
+                })
+            }
         })
     })
 </script>

@@ -1,12 +1,13 @@
 package cn.cms.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import cn.myapp.model.DaoObject;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
-import cn.myapp.model.DaoObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class TagRelation extends DaoObject {
@@ -34,14 +35,18 @@ public class TagRelation extends DaoObject {
 		this.tagId = tagId;
 	}
 	
-	public static List<Tag> getTaglistWithContentID(int contentID) {
-		List<Record> list = Db.find("select * from tagRelation where contentId = ? ;", contentID) ;
-		ArrayList<Tag> taglist = new ArrayList<>() ;
-		for (Record record : list) {
-			Tag aTag = (Tag)(new Tag().fetchFromRecord(record) );
-			taglist.add(aTag) ;
+	public static List<Map> getTaglistWithContentID(int contentID) {
+		List<Record> list = Db.find("select * from tagRelation left join tag on tag.tagId = tagRelation.tagId where contentId = ? ;", contentID) ;
+		ArrayList<Map> tmplist = new ArrayList() ;
+		for (int i = 0; i < list.size(); i++) {
+			HashMap<String,Object> tmpMap = new HashMap<>() ;
+			Record record = list.get(i) ;
+			tmpMap.put("tagId",record.getInt("tagId")) ;
+			tmpMap.put("name",record.getStr("name")) ;
+			tmpMap.put("relationId",record.getInt("relationId")) ;
+			tmplist.add(tmpMap) ;
 		}
-		return taglist ;
+		return tmplist ;
 	}
 	
 }
