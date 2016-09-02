@@ -7,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 
 import java.util.Iterator;
 
@@ -19,7 +21,7 @@ public class ImagesController extends Controller {
      *int     imagesId
      *int     contentId
      *string  img
-     *int     imageOrder
+     *int     imagesOrder
      */
 
     public void add(){
@@ -51,7 +53,7 @@ public class ImagesController extends Controller {
                         Gson gson=new Gson();
                         JsonElement el=(JsonElement)it.next();
                         listImg lImg=gson.fromJson(el,listImg.class);
-                        new Images().set("img",lImg.getimg()).set("imageOrder",lImg.getorder()).set("contentId",contentId).save();
+                        new Images().set("img",lImg.getimg()).set("imagesOrder",lImg.getimagesOrder()).set("contentId",contentId).save();
                         rb=new ResultObj("success");
                     }
                 }
@@ -67,12 +69,13 @@ public class ImagesController extends Controller {
         if(imgId.isEmpty()){
             rb=new ResultObj("0","图片ID不能为空",null);
         }else{
-            String order=getPara("order");
+            String order=getPara("imagesOrder");
             if(order.isEmpty()){
                 rb=new ResultObj("0","排序序号不能为空",null);
             }else{
-                Images img=getModel(Images.class).getOneByID(Integer.parseInt(imgId));
-                img.set("imageOrder",Integer.parseInt(order)).update();
+                Record img=Db.findById("images","imagesId",Integer.parseInt(imgId));
+                img.set("imagesOrder",Integer.parseInt(order));
+                Db.update("images","imagesId",img);
                 rb=new ResultObj("success");
                 }
             }
@@ -87,8 +90,7 @@ public class ImagesController extends Controller {
         if(imgId.isEmpty()){
             rb=new ResultObj("0","图片ID不能为空",null);
         }else{
-            Images img=getModel(Images.class).getOneByID(Integer.parseInt(imgId));
-            img.delete();
+            getModel(Images.class).deleteById(Integer.parseInt(imgId));
             rb=new ResultObj("success");
         }
         
@@ -98,7 +100,7 @@ public class ImagesController extends Controller {
 
     private class listImg{
         private String img;
-        private int order;
+        private int imagesOrder;
 
         public String getimg() {
             return img;
@@ -106,11 +108,11 @@ public class ImagesController extends Controller {
         public void setimg(String img) {
             this.img = img;
         }
-        public int getorder() {
-            return order;
+        public int getimagesOrder() {
+            return imagesOrder;
         }
-        public void setorder(int order) {
-            this.order = order;
+        public void setimagesOrder(int imagesOrder) {
+            this.imagesOrder = imagesOrder;
         }
 
     }

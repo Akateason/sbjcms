@@ -39,6 +39,7 @@ public class MyAppConfig extends JFinalConfig {
 		me.add("/images",ImagesController.class) ;
 		me.add("/tag",TagController.class,"/") ;
 		me.add("/file",FileController.class,"/");
+		me.add("/",ManageController.class);
 	}
 	
 	/* (non-Javadoc)

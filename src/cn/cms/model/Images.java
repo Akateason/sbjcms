@@ -18,7 +18,7 @@ public class Images extends DaoObject
 	private int 	imagesId ;
 	private int 	contentId ;
 	private String	img ;
-	private int 	imageOrder ;
+	private int 	imagesOrder ;
     public int getImagesId() {
 		return imagesId;
 	}
@@ -37,11 +37,11 @@ public class Images extends DaoObject
 	public void setImg(String img) {
 		this.img = img;
 	}
-	public int getimageOrder() {
-		return imageOrder;
+	public int getImagesOrder() {
+		return imagesOrder;
 	}
-	public void setimageOrder(int imageOrder) {
-		this.imageOrder = imageOrder;
+	public void setImagesOrder(int imagesOrder) {
+		this.imagesOrder = imagesOrder;
 	}
 
 	public Images getOneByID(int id) {
@@ -52,7 +52,7 @@ public class Images extends DaoObject
 	
     public static List<Images> getAllByContentID(int id) {
     	List<Images> listImages = new ArrayList<>() ;
-        List<Record> records= Db.find("select * from images where contentId = ? order by imageOrder",id) ;
+        List<Record> records= Db.find("select * from images where contentId = ? order by imagesOrder",id) ;
     	for (Record record : records) {
     		Images aiImages = (Images)new Images().fetchFromRecord(record) ;
     		listImages.add(aiImages) ;

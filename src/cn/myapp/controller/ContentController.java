@@ -388,6 +388,32 @@ public class ContentController extends Controller {
 		}
 		renderJson(rb);
 	}
+
+	/**
+	 * 根据类别获取内容列表
+	 * @param   kind
+	 * @param	size		默认 20
+	 * @return  list
+	 *
+	 */
+	public void searchByKind(){
+		Gson gson = new Gson() ;
+		String kind=getPara("keyword");
+		ResultObj rb=null;
+		if(kind.isEmpty()){
+			rb=new ResultObj("0","标题不能为空",null);
+		}else{
+			List<Record> listRecord=Db.find("select * from content where kind=?",kind);
+			List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord) ;
+			String jsonStr = gson.toJson(list_completeContent) ;
+			@SuppressWarnings("unchecked")
+			List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class) ;
+			HashMap<String, Object> map = new HashMap<>() ;
+			map.put("list", list) ;
+			rb=new ResultObj(map);
+		}
+		renderJson(rb);
+	}
 	
 	private List<HashMap<String, Object>> dealList(List<Record> recordList) {
 		Gson gson = new Gson() ;
@@ -399,6 +425,8 @@ public class ContentController extends Controller {
 	}
 
 	public void  index(){
+		List<Kind> list = Kind.allKind() ;
+		setAttr("kinds",list);
 		render("contentList.html");
 	}
 

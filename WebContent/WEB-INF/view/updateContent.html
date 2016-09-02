@@ -61,7 +61,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <form class="form-horizontal" id="form_content">
                 <div class="form-group">
                     <label for="title" class="col-md-2 control-label">标题:</label>
@@ -153,7 +153,7 @@
                 <div class="row">
                     <div class="col-md-2"></div>
                     <div class="col-md-10">
-                        <input type="submit" value="保存" class="btn-lg btn btn-primary btn-block">
+                        <a class="btn-lg btn btn-primary btn-block">保存</a>
                     </div>
                 </div>
         </form>
@@ -187,12 +187,22 @@
         }
     })
     $("#manyPicsContainer").delegate(".del","click",function(){
-        $(this).closest("li").remove();
+        var img=$(this).closest("li");
+        $.ajax("/images/del",{
+            data:{imagesId:img.attr("data-imagesId")},
+            success:function(data){
+                if(data.returnCode="1001"){
+                    img.remove();
+                }else{
+                    alert(data.returnMsg);
+                }
+            }
+        })
     })
 
     function addImg(src,imageId,imageOrder){
         if(imageId) {
-            $("#manyPicsContainer ul").append("<li><img src='" + src + "' width='150' data-imageId='"+imageId+"' data-imageOrder='"+imageOrder+"' height='150'><i class='del'></i></li>")
+            $("#manyPicsContainer ul").append("<li data-imagesId='"+imageId+"' data-imagesOrder='"+imageOrder+"'><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
         }else{
             $("#manyPicsContainer ul").append("<li><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
         }
@@ -241,7 +251,17 @@
         tagExist:[],
         init:function(){
             $(".tagsContainer").delegate(".del","click",function(){
-                $(this).closest(".tag").remove();
+                var tag=$(this).closest(".tag");
+                $.ajax("/tag/delBind",{
+                    data:{contentId:content.contentId,tagId:tag.attr("data-id")},
+                    success:function(data){
+                        if(data.returnCode="1001"){
+                            tag.remove();
+                        }else{
+                            alert(data.returnMsg);
+                        }
+                    }
+                })
             })
         },
         add:function(name,id) {
@@ -250,6 +270,14 @@
                     data:{name:$("#ipt_tags").val()},
                     success:function(data){
                         this.add(name,data.returnData.tagId);
+                        $.ajax("/tag/addBind", {
+                            data: {contentId: content.contentId, tagId: data.returnData.tagId},
+                            success: function (data) {
+                                if (data.returnCode != "1001") {
+                                    alert(data.returnMsg);
+                                }
+                            }
+                        })
                     }.bind(this)
                 })
             }else{
@@ -295,34 +323,24 @@
             isSlide:$("#isSlide").prop("checked")?1:0
         }
         var manyPics=[];
-        $("#manyPicsContainer img").each(function(i,j){
-            manyPics.push({img:$(j).attr("src"),order:(i+1)});
+        $("#manyPicsContainer li").each(function(i,j){
+            var li=$(j);
+            $.ajax("/images/update",{
+                data:{imagesId:li.attr("data-imagesId"),imagesOrder:(i+1)},
+                success:function(data){
+                    if(data.returnCode!="1001"){
+                        alert(data.returnMsg);
+                    }
+                }
+            })
         })
         $.ajax("/content/add",{
             type:"POST",
             data:content,
             success:function(data){
                 if(data.returnCode=="1001") {
-                    var contentId = data.returnData.contentId;
-                    $.ajax("/images/add", {
-                        type: "POST",
-                        data: {list: JSON.stringify(manyPics), contentId: contentId},
-                        success: function (data) {
-                            if (data.returnCode != "1001") {
-                                alert(data.returnMsg);
-                            }
-                        }
-                    })
-                    $(".tag").each(function (i, j) {
-                        $.ajax("/tag/addBind", {
-                            data: {contentId: contentId, tagId: $(j).attr("data-id")},
-                            success: function (data) {
-                                if (data.returnCode != "1001") {
-                                    alert(data.returnMsg);
-                                }
-                            }
-                        })
-                    })
+                    alert("修改成功!");
+                    window.location.href="/content/";
                 }else{
                     alert(data.returnMsg);
                 }
@@ -350,7 +368,7 @@
         }
 
         for(var i=0;i<content.imagelist.length;i++){
-            addImg(content.imagelist[i].img,content.imagelist[i].imageId,content.imagelist[i].imageOrder)
+            addImg(content.imagelist[i].img,content.imagelist[i].imagesId,content.imagelist[i].imagesOrder)
         }
     }
 

@@ -4,23 +4,28 @@
     <meta charset="UTF-8">
     <title>类型列表</title>
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+        #kindList{
+            cursor: move;
+        }
+    </style>
 </head>
 <body>
-<a href="/kind/addH">添加新类型</a>
-<table id="kindList" class="table table-striped table-bordered" style="width: 75%;">
+<a href="/kind/addH" style="margin-bottom: 20px;display: block;">添加新类型</a>
+<table id="kindList" class="table table-striped table-bordered" style="width: 90%;">
     <thead>
         <tr>
             <th style="text-align: center;">#</th>
-            <th>名称</th>
-            <th>操作</th>
+            <th style="text-align: center;">名称</th>
+            <th style="text-align: center;">操作</th>
         </tr>
     </thead>
     <tbody>
     <#list list as kind>
         <tr data-order="${kind.kindOrder}" data-id="${kind.kindId}">
             <td width="10%" style="text-align: center;">${kind_index+1}</td>
-            <td width="85%">${kind.name}</td>
-            <td width="5%" style="text-align:center"><a href="/kind/addH?kindId=${kind.kindId}">修改</a> </td>
+            <td width="80%">${kind.name}</td>
+            <td width="10%" style="text-align:center"><a href="/kind/addH?kindId=${kind.kindId}">修改</a> </td>
         </tr>
     </#list>
     </tbody>

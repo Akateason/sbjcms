@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>添加新类型</title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+        #name{
+            width: 200px;
+        }
+    </style>
 </head>
 <body>
-    <label for="name">名称:</label>
-    <input type="text" name="name" id="name" value="${(kind.name)!}">
-    <input type="hidden" name="kindId" id="kindId" value="${(kind.kindId)!}">
-    <input type="hidden" name="kindOrder" id="kindOrder" value="${(kind.kindOrder)!}">
-    <a href="javascript:;" id="save">保存</a>
+    <div class="form-inline">
+        <label for="name" class="control-label">名称:</label>
+        <input type="text" name="name" id="name" value="${(kind.name)!}" class="form-control">
+        <input type="hidden" name="kindId" id="kindId" value="${(kind.kindId)!}">
+        <input type="hidden" name="kindOrder" id="kindOrder" value="${(kind.kindOrder)!}">
+        <a href="javascript:;" id="save" class="btn btn-primary">保存</a>
+    </div>
 <script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
 <script>
     $(function(){
