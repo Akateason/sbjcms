@@ -3,7 +3,6 @@
  */
 package cn.myapp.config;
 
-import cn.cms.model.Images;
 import cn.myapp.controller.*;
 
 import com.jfinal.config.*;
@@ -54,7 +53,7 @@ public class MyAppConfig extends JFinalConfig {
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(cp) ;
 		me.add(arp) ;
 
-		arp.addMapping("Images","imagesId",Images.class) ;
+//		arp.addMapping("Images","imagesId",Images.class) ;
 	}
 	
 	/* (non-Javadoc)
