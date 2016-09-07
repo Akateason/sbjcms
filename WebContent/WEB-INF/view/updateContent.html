@@ -252,11 +252,13 @@
         init:function(){
             $(".tagsContainer").delegate(".del","click",function(){
                 var tag=$(this).closest(".tag");
+                var i=tag.index();
                 $.ajax("/tag/delBind",{
                     data:{contentId:content.contentId,tagId:tag.attr("data-id")},
                     success:function(data){
                         if(data.returnCode="1001"){
                             tag.remove();
+                            tags.tagExist.splice(i,1);
                         }else{
                             alert(data.returnMsg);
                         }
@@ -265,24 +267,26 @@
             })
         },
         add:function(name,id) {
+            if(name.length==0){return false;}
             if(!id) {
                 $.ajax("/tag/add",{
                     data:{name:$("#ipt_tags").val()},
                     success:function(data){
                         this.add(name,data.returnData.tagId);
-                        $.ajax("/tag/addBind", {
-                            data: {contentId: content.contentId, tagId: data.returnData.tagId},
-                            success: function (data) {
-                                if (data.returnCode != "1001") {
-                                    alert(data.returnMsg);
-                                }
-                            }
-                        })
+
                     }.bind(this)
                 })
             }else{
                 if (this.checkTagExist(name)) {
                     $("<div class='tag' data-id='" + id + "'>" + name + "<a class='del' href='javascript:;'>x</a></div>").insertBefore("#ipt_tags");
+                    $.ajax("/tag/addBind", {
+                        data: {contentId: content.contentId, tagId: id},
+                        success: function (data) {
+                            if (data.returnCode != "1001") {
+                                alert(data.returnMsg);
+                            }
+                        }
+                    })
                     this.tagExist.push(name);
                 }
             }
@@ -364,7 +368,7 @@
         $("#isSlide").prop("checked",content.isSlide);
 
         for(var i=0;i<content.taglist.length;i++){
-            tags.add(content.taglist[i].name,content.taglist[i].tagId);
+            $("<div class='tag' data-id='" + content.taglist[i].tagId + "'>" + content.taglist[i].name + "<a class='del' href='javascript:;'>x</a></div>").insertBefore("#ipt_tags");
         }
 
         for(var i=0;i<content.imagelist.length;i++){

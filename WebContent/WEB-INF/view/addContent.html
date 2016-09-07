@@ -232,7 +232,10 @@
         tagExist:[],
         init:function(){
             $(".tagsContainer").delegate(".del","click",function(){
-                $(this).closest(".tag").remove();
+                var tag=$(this).closest(".tag");
+                var i=tag.index();
+                tag.remove();
+                this.tagExist.slice(i,1);
             })
         },
         add:function(name,id) {
@@ -281,9 +284,9 @@
             link:$("#link").val(),
             cover:$("#cover").attr("src"),
             displayType:$("#displayType").val(),
-            isTop:$("#isTop").val()=="on"?1:0,
-            isRecommend:$("#isRecommend").val()=="on"?1:0,
-            isSlide:$("#isSlide").val()=="on"?1:0
+            isTop:$("#isTop").prop("checked")?1:0,
+            isRecommend:$("#isRecommend").prop("checked")?1:0,
+            isSlide:$("#isSlide").prop("checked")?1:0
         }
         var manyPics=[];
         $("#manyPicsContainer img").each(function(i,j){
@@ -295,15 +298,17 @@
             success:function(data){
                 if(data.returnCode=="1001") {
                     var contentId = data.returnData.contentId;
-                    $.ajax("/images/add", {
-                        type: "POST",
-                        data: {list: JSON.stringify(manyPics), contentId: contentId},
-                        success: function (data) {
-                            if (data.returnCode != "1001") {
-                                alert(data.returnMsg);
+                    if(manyPics.length){
+                        $.ajax("/images/add", {
+                            type: "POST",
+                            data: {list: JSON.stringify(manyPics), contentId: contentId},
+                            success: function (data) {
+                                if (data.returnCode != "1001") {
+                                    alert(data.returnMsg);
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
                     $(".tag").each(function (i, j) {
                         $.ajax("/tag/addBind", {
                             data: {contentId: contentId, tagId: $(j).attr("data-id")},
