@@ -11,7 +11,14 @@ public class CompleteContent extends Content {
 	
 	private List<Map> taglist ;
 	private List<Images> imagelist ;
+	private String kindName ;
 	
+	public String getKindName() {
+		return kindName;
+	}
+	public void setKindName(String kindName) {
+		this.kindName = kindName;
+	}
 	public List<Map> getTaglist() {
 		return taglist;
 	}
@@ -25,18 +32,20 @@ public class CompleteContent extends Content {
 		this.imagelist = imagelist;
 	}
 	
-	public CompleteContent(Content content , List<Map> taglist , List<Images> imagesList) {
+	public CompleteContent(Content content , List<Map> taglist , List<Images> imagesList, String kindName) {
 		// TODO Auto-generated constructor stub
 		super(content) ;
 		this.setTaglist(taglist);
 		this.setImagelist(imagesList);
+		this.setKindName(kindName); 
 	}
 	
 	public static CompleteContent getCompleteContentWithRecord(Record record) {
 		Content aContent = (Content)new Content().fetchFromRecord(record) ;	
 		List<Map> taglist = TagRelation.getTaglistWithContentID(aContent.getContentId()) ;
 		List<Images> imageslist = Images.getAllByContentID(aContent.getContentId()) ;				
-		CompleteContent completeContent = new CompleteContent(aContent, taglist, imageslist) ;
+		String kindName = Kind.getKindNameWithKindID(aContent.getKind()) ;
+		CompleteContent completeContent = new CompleteContent(aContent, taglist, imageslist,kindName) ;
 		return completeContent ;
 	}
 

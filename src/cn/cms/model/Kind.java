@@ -45,4 +45,9 @@ public class Kind extends DaoObject {
 		return null ;
 	}
 	
+	public static String getKindNameWithKindID(long kindID) {
+		String kindName = Db.queryStr("select name from kind where kindId = ?",kindID) ;
+		return kindName ;
+	}
+	
 }
