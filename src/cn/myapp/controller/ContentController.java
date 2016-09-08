@@ -8,6 +8,7 @@ import cn.cms.model.Kind;
 import com.google.gson.Gson;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 import cn.cms.model.CompleteContent;
@@ -221,8 +222,8 @@ public class ContentController extends Controller {
 	 * 
 	 * @param kind
 	 *            如果为0, 返回全部分类
-	 * @param sendtime
-	 *            如果为0, 返回最新的 tick
+	 * @param page
+	 *            默认为1, 
 	 * @param size
 	 *            默认 20
 	 * @return list
@@ -230,24 +231,20 @@ public class ContentController extends Controller {
 	 */
 	public void list() throws ParseException {
 		int kindId = getParaToInt("kind", 0);
-		Long sendtime = getParaToLong("sendtime", null);
-		long dateSendtime = (sendtime == null) ? XtDate.getNowTick() : sendtime;
-		int size = getParaToInt("size", 20);
+		int page = getParaToInt("page",1) ;
+		int size = getParaToInt("size", 20) ;
 
-		List<Record> listRecord = null;
+		Page<Record> recordPage = null ;
 		if (kindId == 0) {
-			listRecord = Db.find("select * from content where sendtime < ? order by sendtime desc limit ? ;",
-					dateSendtime, size);
+			recordPage = Db.paginate(page, size, "select *","from content order by sendtime desc") ;			
 		} else {
-			listRecord = Db.find(
-					"select * from content where kind = ? and sendtime < ? order by sendtime desc limit ? ;", kindId,
-					dateSendtime, size);
+			recordPage = Db.paginate(page, size, "select *", "from content where kind = ? order by sendtime desc",kindId) ;
 		}
-
-		List<HashMap<String, Object>> list = dealList(listRecord);
+		
+		List<HashMap<String, Object>> list = dealList(recordPage.getList());
 		HashMap<String, Object> map = new HashMap<>();
-		map.put("list", list);
-		renderJson(new ResultObj(map));
+		map.put("list", list) ;
+		renderJson(new ResultObj(map)) ;
 	}
 
 	/**
