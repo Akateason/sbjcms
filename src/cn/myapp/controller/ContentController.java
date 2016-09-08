@@ -264,7 +264,7 @@ public class ContentController extends Controller {
 	public void alist() {
 		int kindId = getParaToInt("kind", 0);
 		Long sendtime = getParaToLong("sendtime", null);
-		long dateSendtime = (sendtime == null) ? XtDate.getNowTick() : sendtime;
+		long dateSendtime = (sendtime == null || sendtime == 0) ? XtDate.getNowTick() : sendtime;
 		int size = getParaToInt("size", 20);
 
 		if (kindId == 0) {
