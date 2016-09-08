@@ -153,7 +153,7 @@
                 <div class="row">
                     <div class="col-md-2"></div>
                     <div class="col-md-10">
-                        <a class="btn-lg btn btn-primary btn-block">保存</a>
+                        <a class="btn-lg btn btn-primary btn-block save">保存</a>
                     </div>
                 </div>
         </form>
@@ -311,7 +311,7 @@
 
 
     //内容收集提交
-    $("#form_content").submit(function(e){
+    $(".save").click(function(e){
         e.preventDefault();
         var content={
             title:$("#title").val(),
@@ -321,6 +321,7 @@
             html:$("#html").val(),
             link:$("#link").val(),
             cover:$("#cover").attr("src"),
+            contentId:window.content.contentId,
             displayType:$("#displayType").val(),
             isTop:$("#isTop").prop("checked")?1:0,
             isRecommend:$("#isRecommend").prop("checked")?1:0,
@@ -338,7 +339,7 @@
                 }
             })
         })
-        $.ajax("/content/add",{
+        $.ajax("/content/update",{
             type:"POST",
             data:content,
             success:function(data){
@@ -350,6 +351,7 @@
                 }
             }
         })
+        window.location.href="/content";
         return false;
     })
 
