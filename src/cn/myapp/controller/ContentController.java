@@ -18,8 +18,9 @@ import cn.myapp.util.XtDate;
 
 public class ContentController extends Controller {
 
-	private static final int kNumberOfSlides = 5;
-
+	private static final int kNumberOfSlides = 5 ;
+	private static final int kNumberOfTops 	 = 10 ;
+	
 	/**
 	 * 内容 增加 h
 	 * 
@@ -274,7 +275,7 @@ public class ContentController extends Controller {
 
 			// 2 . 置顶
 			List<Record> tops = Db
-					.find("select * from content where isRecommend = 1 and isTop = 1 order by sendtime desc ;");
+					.find("select * from content where isRecommend = 1 and isTop = 1 order by sendtime desc limit ? ;",kNumberOfTops);
 			List<HashMap<String, Object>> list_tops = dealList(tops);
 
 			// 3 . 列表 (不带置顶)
@@ -298,13 +299,13 @@ public class ContentController extends Controller {
 			List<HashMap<String, Object>> list_slides = dealList(slides);
 
 			// 2 . 置顶
-			List<Record> tops = Db.find("select * from content where kind = ? and isTop = 1 order by sendtime desc ;", kindId);
-			List<HashMap<String, Object>> list_top = dealList(tops);
+			List<Record> tops = Db.find("select * from content where kind = ? and isTop = 1 order by sendtime desc limit ? ;", kindId,kNumberOfTops) ;
+			List<HashMap<String, Object>> list_top = dealList(tops) ;
 
 			// 3 . 列表 (不带置顶)
 			List<Record> contents = Db.find(
-					"select * from content where sendtime < ? and kind = ? and isTop = 0 order by sendtime desc limit ? ;",
-					dateSendtime, kindId, size);
+					"select * from content where sendtime < ? and kind = ? and isTop = 0 order by sendtime desc limit ? ;" ,
+					dateSendtime, kindId, size) ;
 			List<HashMap<String, Object>> list_content = dealList(contents);
 
 			HashMap<String, Object> map = new HashMap<>();
