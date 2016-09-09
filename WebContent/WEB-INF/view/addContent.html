@@ -290,7 +290,7 @@
         }
         var manyPics=[];
         $("#manyPicsContainer img").each(function(i,j){
-            manyPics.push({img:$(j).attr("src"),order:(i+1)});
+            manyPics.push({img:$(j).attr("src"),imagesOrder:(i+1)});
         })
         $.ajax("/content/add",{
             type:"POST",
@@ -299,8 +299,9 @@
                 if(data.returnCode=="1001") {
                     var contentId = data.returnData.contentId;
                     if(manyPics.length){
-                        $.ajax("/images/add", {
+                        $.ajax("/images/adds", {
                             type: "POST",
+                            async:false,
                             data: {list: JSON.stringify(manyPics), contentId: contentId},
                             success: function (data) {
                                 if (data.returnCode != "1001") {
@@ -312,6 +313,7 @@
                     $(".tag").each(function (i, j) {
                         $.ajax("/tag/addBind", {
                             data: {contentId: contentId, tagId: $(j).attr("data-id")},
+                            async:false,
                             success: function (data) {
                                 if (data.returnCode != "1001") {
                                     alert(data.returnMsg);

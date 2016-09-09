@@ -204,7 +204,13 @@
         if(imageId) {
             $("#manyPicsContainer ul").append("<li data-imagesId='"+imageId+"' data-imagesOrder='"+imageOrder+"'><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
         }else{
-            $("#manyPicsContainer ul").append("<li><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
+            $.ajax("/images/add",{
+                data:{contentId:content.contentId,img:src,imagesOrder:$("#manyPicsContainer ul li").length+1},
+                success:function(data){
+                    addImg(src,data.returnData.imagesId,0);
+                }
+            })
+//            $("#manyPicsContainer ul").append("<li><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
         }
         $("#manyPicsContainer ul").sortable();
     }

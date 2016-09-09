@@ -77,7 +77,7 @@
                         React.createElement(MyList,{"data":data.returnData.list}),
                         document.getElementById("contetListContainer"),
                         function(){
-                            $("#contetListContainer").prepend("<thead><tr><th>ID</th><th>标题</th><th>类别</th><th>置顶</th><th>置顶</th><th>推荐</th><th>幻灯片</th></tr></thead>")
+                            $("#contetListContainer").prepend("<thead><tr><th>ID</th><th>标题</th><th>类别</th><th>置顶</th><th>推荐</th><th>幻灯片</th><th>操作</th></tr></thead>")
                         }
                 )
             }
@@ -129,6 +129,7 @@
                     myCompent.setProps({"data": data.returnData.list});
                 }else{
                     $(".nextPage").addClass("disabled");
+                    currentP--;
                     alert("到底了");
                 }
             }

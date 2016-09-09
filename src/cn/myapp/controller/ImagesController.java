@@ -10,6 +10,7 @@ import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -24,8 +25,10 @@ public class ImagesController extends Controller {
      *int     imagesOrder
      */
 
-    public void add(){
+    public void adds(){
         ResultObj rb=null;
+
+        //保存img数组
         String imgs=getPara("list");
         String[] imgs_arr=null;
         if(imgs.isEmpty() || imgs.length()<=2){
@@ -35,15 +38,6 @@ public class ImagesController extends Controller {
             if(contentId.isEmpty()){
                 rb=new ResultObj("0","内容ID不能为空",null);
             }else{
-                /*imgs=imgs.substring(1,imgs.length()-1);
-                imgs_arr=imgs.split(",");
-                for(String img:imgs_arr){
-                    Gson gson=new Gson();
-                    listImg listImg=gson.fromJson(img,listImg.class);
-                    new Images().set("imgUrl",listImg.getimgUrl()).set("order",listImg.getorder()).set("contentId",contentId).save();
-                    rb=new ResultObj();
-                }*/
-
                 JsonParser parser=new JsonParser();
                 JsonElement els=parser.parse(imgs);
                 if(els.isJsonArray()){
@@ -53,15 +47,69 @@ public class ImagesController extends Controller {
                         Gson gson=new Gson();
                         JsonElement el=(JsonElement)it.next();
                         listImg lImg=gson.fromJson(el,listImg.class);
-                        new Images().set("img",lImg.getimg()).set("imagesOrder",lImg.getimagesOrder()).set("contentId",contentId).save();
+                        Images nImg=new Images();
+                        nImg.setImg(lImg.getimg());
+                        nImg.setImagesOrder(lImg.getimagesOrder());
+                        nImg.setContentId(Integer.parseInt(contentId));
+                        nImg.daoInsert("images","imagesId");
                         rb=new ResultObj("success");
                     }
                 }
             }
         }
 
+
         renderJson(rb);
     }
+
+    /**
+     *
+     * int contentId
+     * int imagesOrder
+     * string img
+     *
+     */
+
+    public void add(){
+        ResultObj rb=null;
+        int contentId=getParaToInt("contentId",-1);
+        int imagesOrder=getParaToInt("imagesOrder",99);
+        String img=getPara("img");
+        if(contentId==-1){
+            rb=new ResultObj("0","内容ID不能为空",null);
+            renderJson(rb);
+            return;
+        }
+        if(img.equals("")){
+            rb=new ResultObj("0","图片不能为空",null);
+            renderJson(rb);
+            return;
+        }
+        Images nImg=new Images();
+        nImg.setImg(img);
+        nImg.setImagesOrder(imagesOrder);
+        nImg.setContentId(contentId);
+        long imagesId=nImg.daoInsert("images","imagesId");
+        if (imagesId > 0) {
+            // success
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("imagesId", imagesId);
+            rb=new ResultObj(map);
+        } else {
+            // fail
+            rb=new ResultObj(null);
+        }
+        renderJson(rb);
+    }
+
+
+
+    /**
+     *
+     * int imagesId
+     * int imagesOrder
+     *
+     */
 
     public void update(){
         ResultObj rb=null;
