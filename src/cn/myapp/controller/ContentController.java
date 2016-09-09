@@ -294,7 +294,7 @@ public class ContentController extends Controller {
 			// 类型 分页
 			// 1 . 幻灯片
 			List<Record> slides = Db.find(
-					"select * from content where kind = ? and isTop = 1 order by sendtime desc limit ? ;", kindId,
+					"select * from content where kind = ? and isSlide = 1 order by sendtime desc limit ? ;", kindId,
 					kNumberOfSlides);
 			List<HashMap<String, Object>> list_slides = dealList(slides);
 
