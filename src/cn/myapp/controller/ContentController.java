@@ -264,7 +264,7 @@ public class ContentController extends Controller {
 		Long sendtime = getParaToLong("sendtime", null);
 		long dateSendtime = (sendtime == null || sendtime == 0) ? XtDate.getNowTick() : sendtime;
 		int size = getParaToInt("size", 20);
-
+		
 		if (kindId == 0) {
 			// 推荐
 			// 1 . 幻灯片
@@ -287,8 +287,7 @@ public class ContentController extends Controller {
 			HashMap<String, Object> map = new HashMap<>();
 			map.put("slide", list_slides);
 			map.put("list", list_content);
-			map.put("top", list_tops);
-
+			map.put("top", list_tops) ;			
 			renderJson(new ResultObj(map));
 		} else if (kindId > 0) {
 			// 类型 分页
@@ -312,9 +311,8 @@ public class ContentController extends Controller {
 			map.put("slide", list_slides);
 			map.put("list", list_content);
 			map.put("top", list_top);
-
 			renderJson(new ResultObj(map));
-		}
+		}		
 	}
 
 	/**
