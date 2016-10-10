@@ -7,7 +7,6 @@ import java.util.List;
 import cn.cms.model.Kind;
 import com.google.gson.Gson;
 import com.jfinal.core.Controller;
-import com.jfinal.core.JFinal;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -16,7 +15,6 @@ import cn.cms.model.CompleteContent;
 import cn.cms.model.Content;
 import cn.myapp.model.ResultObj;
 import cn.myapp.util.XtDate;
-import net.sf.morph.context.contexts.HttpServletContext;
 
 public class ContentController extends Controller {
 
@@ -377,7 +375,6 @@ public class ContentController extends Controller {
 	 *
 	 */
 	public void search() {
-		Gson gson = new Gson();
 		int kindId = getParaToInt("kind", 0);
 		int page = getParaToInt("page",1) ;
 		int size = getParaToInt("size", 20) ;
@@ -437,8 +434,8 @@ public class ContentController extends Controller {
 	 *
 	 */
 	public void searchByTag() {
-		Gson gson = new Gson();
-		int kindId = getParaToInt("kind", 0);
+//		Gson gson = new Gson();
+//		int kindId = getParaToInt("kind", 0);
 		int page = getParaToInt("page",1) ;
 		int size = getParaToInt("size", 20) ;
 		String tag = getPara("keyword");
@@ -476,7 +473,7 @@ public class ContentController extends Controller {
 	 *
 	 */
 	public void searchByKind() {
-		Gson gson = new Gson();
+//		Gson gson = new Gson();
 		int kindId = getParaToInt("keyword", 0);
 		int page = getParaToInt("page",1) ;
 		int size = getParaToInt("size", 20) ;
