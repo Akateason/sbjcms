@@ -75,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label for="author" class="col-md-2 control-label">描述:</label>
-                    <div class="col-md-10"><textarea type="text" name="" id="desc" class="form-control"></textarea></div>
+                    <div class="col-md-10"><div id="desc"></div></div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label" for="kind">类型:</label>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="form-group">
                     <label for="author" class="col-md-2 control-label">内容:</label>
-                    <div class="col-md-10"><textarea type="text" name="" id="html" class="form-control" rows="6"></textarea></div>
+                    <div class="col-md-10"><div id="html"></div></div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label" for="link">外链:</label>
@@ -153,7 +153,7 @@
                 <div class="row">
                     <div class="col-md-2"></div>
                     <div class="col-md-10">
-                        <input type="submit" value="保存" class="btn-lg btn btn-primary btn-block">
+                        <a class="btn-lg btn btn-primary btn-block save">保存</a>
                     </div>
                 </div>
         </form>
@@ -162,6 +162,8 @@
 <script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
 <script src="${ctx}/scripts/jquery.uploadify.js"></script>
 <script src="${ctx}/scripts/jquery-ui.js"></script>
+<script src="${ctx}/ueditor/ueditor.config.js"></script>
+<script src="${ctx}/ueditor/ueditor.all.min.js"></script>
 <script>
     $("#cover_file").uploadify({
         swf                 : '${ctx}/scripts/uploadify.swf',
@@ -240,6 +242,9 @@
         },
         add:function(name,id) {
             if(!id) {
+                if(name.length==0){
+                    return false;
+                }
                 $.ajax("/tag/add",{
                     data:{name:$("#ipt_tags").val()},
                     success:function(data){
@@ -273,36 +278,22 @@
 
 
     //内容收集提交
-    $("#form_content").submit(function(e){
+    var content={};
+    $(".save").click(function(e){
+        $(this).addClass("disabled");
         e.preventDefault();
-        var content={
-            title:$("#title").val(),
-            author:$("#author").val(),
-            desc:$("#desc").val(),
-            kind:$("#kind").val(),
-            html:$("#html").val(),
-            link:$("#link").val(),
-            cover:$("#cover").attr("src"),
-            displayType:$("#displayType").val(),
-            isTop:$("#isTop").prop("checked")?1:0,
-            isRecommend:$("#isRecommend").prop("checked")?1:0,
-            isSlide:$("#isSlide").prop("checked")?1:0
-        }
-        var manyPics=[];
-        $("#manyPicsContainer img").each(function(i,j){
-            manyPics.push({img:$(j).attr("src"),imagesOrder:(i+1)});
-        })
+        getFormData();
         $.ajax("/content/add",{
             type:"POST",
             data:content,
             success:function(data){
                 if(data.returnCode=="1001") {
                     var contentId = data.returnData.contentId;
-                    if(manyPics.length){
+                    if(content.imagelist.length){
                         $.ajax("/images/adds", {
                             type: "POST",
                             async:false,
-                            data: {list: JSON.stringify(manyPics), contentId: contentId},
+                            data: {list: JSON.stringify(content.imagelist), contentId: contentId},
                             success: function (data) {
                                 if (data.returnCode != "1001") {
                                     alert(data.returnMsg);
@@ -320,15 +311,118 @@
                                 }
                             }
                         })
-                    })
+                    });
+                    localStorage.removeItem("content");//清除缓存的内容
                     alert("内容保存成功");
                     window.location.href="/content";
                 }else{
                     alert(data.returnMsg);
                 }
+            },
+            complete:function(jqXHR,textStatus){
+                $(".save").removeClass("disabled");
             }
         })
         return false;
+    });
+
+    function getFormData(){
+        content={
+            title:$("#title").val(),
+            author:$("#author").val(),
+            desc:ue_desc.getContent(),
+            kind:$("#kind").val(),
+            html:ue_html.getContent(),
+            link:$("#link").val(),
+            cover:$("#cover").attr("src"),
+            displayType:$("#displayType").val(),
+            isTop:$("#isTop").prop("checked")?1:0,
+            isRecommend:$("#isRecommend").prop("checked")?1:0,
+            isSlide:$("#isSlide").prop("checked")?1:0,
+            taglist:[],
+            imagelist:[]
+        }
+        $(".tag").each(function (i, j) {
+            var name=$(j).text();
+            name=name.substring(0,name.length-1);
+            content.taglist.push({name:name,tagId:$(j).attr("data-id")})
+        });
+        $("#manyPicsContainer img").each(function(i,j){
+            content.imagelist.push({img:$(j).attr("src"),imagesOrder:(i+1)});
+        })
+    }
+
+
+    var ue_desc=UE.getEditor("desc");
+    var ue_html=UE.getEditor("html");
+
+    var ue_init_flag=0;
+    ue_desc.ready(function(){
+        ue_init_flag++;
+        if(ue_init_flag>=2){
+            checkLSC();
+        }
     })
+    ue_html.ready(function(){
+        ue_init_flag++;
+        if(ue_init_flag>=2){
+            checkLSC();
+        }
+    })
+
+    //检查localStorage是否有未保存的content
+    function checkLSC(){
+        if(localStorage.getItem("content")){
+            if(confirm("有未保存的内容是否要读取?")) {
+                initForm($.parseJSON(localStorage.getItem("content")));
+            }else{
+                localStorage.removeItem("content");
+            }
+        }
+        setInterval(function(){getFormData();localStorage.content=JSON.stringify(content);},20*1000);
+    }
+
+
+    //填充form
+    function initForm(content){
+        $("#title").val(content.title);
+        $("#author").val(content.author);
+        ue_desc.setContent(content.desc);
+        $("#kind").val(content.kind);
+        ue_html.setContent(content.html);
+        $("#link").val(content.link);
+        $("#coverPicContainer").append("<img src='"+content.cover+"' width='100' height='100' id='cover'>");
+        $("#displayType").val(content.displayType);
+        $("#isTop").prop("checked",content.isTop);
+        $("#isRecommend").prop("checked",content.isRecommend);
+        $("#isSlide").prop("checked",content.isSlide);
+
+        for(var i=0;i<content.taglist.length;i++){
+            $("<div class='tag' data-id='" + content.taglist[i].tagId + "'>" + content.taglist[i].name + "<a class='del' href='javascript:;'>x</a></div>").insertBefore("#ipt_tags");
+        }
+
+        for(var i=0;i<content.imagelist.length;i++){
+            addImg(content.imagelist[i].img,content.imagelist[i].imagesId,content.imagelist[i].imagesOrder)
+        }
+    }
+
+
+
+
+    function addImg(src,imageId,imageOrder){
+        if(imageId) {
+            $("#manyPicsContainer ul").append("<li data-imagesId='"+imageId+"' data-imagesOrder='"+imageOrder+"'><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
+        }else{
+            $.ajax("/images/add",{
+                data:{contentId:content.contentId,img:src,imagesOrder:$("#manyPicsContainer ul li").length+1},
+                success:function(data){
+                    addImg(src,data.returnData.imagesId,0);
+                }
+            })
+//            $("#manyPicsContainer ul").append("<li><img src='" + src + "' width='150' height='150'><i class='del'></i></li>")
+        }
+        $("#manyPicsContainer ul").sortable();
+    }
+
 </script>
 </html>

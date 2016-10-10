@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>${content}</title>
+    <style>
+        em{
+            font-style: normal;
+        }
+        h2{
+            margin:0;
+            padding:0;
+        }
+    </style>
+    <style>
+        .page-content{
+            position: relative;
+            padding: 20px 15px 15px;
+            background-color: #fff;
+        }
+        .rich_media_title{
+            margin-bottom: 10px;
+            line-height: 1.4;
+            font-weight: 400;
+            font-size: 24px;
+        }
+        .rich_media_meta_list{
+            margin-bottom: 18px;
+            line-height: 20px;
+            font-size: 0;
+        }
+        .rich_media_meta_text{
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #8c8c8c;
+        }
+        .rich_media_content{
+            position: relative;
+            color:#3e3e3e;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-content">
+        <h2 class="rich_media_title">${content.title}</h2>
+        <div class="rich_media_meta_list">
+            <em class="rich_media_meta_text">${(content.createtime*1000)?number_to_date}</em>
+            <em class="rich_media_meta_text">${content.author}</em>
+        </div>
+        <div class="rich_media_content">
+            ${content.html}
+        </div>
+    </div>
+</body>
+</html>

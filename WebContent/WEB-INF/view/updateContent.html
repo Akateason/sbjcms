@@ -75,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label for="author" class="col-md-2 control-label">描述:</label>
-                    <div class="col-md-10"><textarea type="text" name="" id="desc" class="form-control"></textarea></div>
+                    <div class="col-md-10"><div id="desc"></div></div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label" for="kind">类型:</label>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="form-group">
                     <label for="author" class="col-md-2 control-label">内容:</label>
-                    <div class="col-md-10"><textarea type="text" name="" id="html" class="form-control" rows="6"></textarea></div>
+                    <div class="col-md-10"><div id="html"></div></div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label" for="link">外链:</label>
@@ -162,8 +162,14 @@
 <script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
 <script src="${ctx}/scripts/jquery.uploadify.js"></script>
 <script src="${ctx}/scripts/jquery-ui.js"></script>
+<script src="${ctx}/ueditor/ueditor.config.js"></script>
+<script src="${ctx}/ueditor/ueditor.all.min.js"></script>
 <script>
     var content=${content};
+
+    var ue_desc=UE.getEditor("desc");
+    var ue_html=UE.getEditor("html");
+
     $("#cover_file").uploadify({
         swf                 : '${ctx}/scripts/uploadify.swf',
         uploader            : '/file/upload',
@@ -322,9 +328,9 @@
         var content={
             title:$("#title").val(),
             author:$("#author").val(),
-            desc:$("#desc").val(),
+            desc:ue_desc.getContent(),
             kind:$("#kind").val(),
-            html:$("#html").val(),
+            html:ue_html.getContent(),
             link:$("#link").val(),
             cover:$("#cover").attr("src"),
             contentId:window.content.contentId,
@@ -365,9 +371,9 @@
     function initForm(content){
         $("#title").val(content.title);
         $("#author").val(content.author);
-        $("#desc").val(content.desc);
+        ue_desc.setContent(content.desc);
         $("#kind").val(content.kind);
-        $("#html").val(content.html);
+        ue_html.setContent(content.html);
         $("#link").val(content.link);
         $("#coverPicContainer").append("<img src='"+content.cover+"' width='100' height='100' id='cover'>");
         $("#displayType").val(content.displayType);
@@ -384,6 +390,18 @@
         }
     }
 
-    initForm(content);
+    var ue_init_flag=0;
+    ue_desc.ready(function(){
+        ue_init_flag++;
+        if(ue_init_flag>=2){
+            initForm(content);
+        }
+    })
+    ue_html.ready(function(){
+        ue_init_flag++;
+        if(ue_init_flag>=2){
+            initForm(content);
+        }
+    })
 </script>
 </html>

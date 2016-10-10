@@ -12,6 +12,9 @@
             border-bottom: 1px solid #ddd;
             padding-bottom: 20px;
         }
+        .sortCol{
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -25,11 +28,12 @@
 </div>
 <div class="searchInfoContainer">
     <span>类别:</span>
-        <#list kinds as kind>
+    <a href="javascript:getAllData();">全部</a>
+    <#list kinds as kind>
             <a href="javascript:searchData(${kind.kindId});">${kind.name}</a>
         </#list>
 </div>
-<a href="/content/addH" style="margin-bottom: 20px;display: block;">添加新内容</a>
+<a href="/content/addH" style="margin-bottom: 20px;display: inline-block;">添加新内容</a>
 <a href="javascript:getPageData(-1)" class="btn prePage">上一页</a>
 <a href="javascript:getPageData(1)" class="btn nextPage">下一页</a>
 <table id="contetListContainer" class="table table-striped table-bordered">
@@ -41,47 +45,48 @@
 
 <script src="${ctx}/scripts/jquery-1.8.3.min.js"></script>
 <script src="${ctx}/scripts/react.js"></script>
-<script src="${ctx}/scripts/JSXTransformer.js"></script>
+<script src="${ctx}/jsx/contentList.js"></script>
 
-<script type="text/jsx">
+<script type="text/javascript">
     var currentP=1;
-    var MyList=React.createClass({
-        render:function(){
-            var flist=this.props.data.map(function(content){
-                var modifyLink="content/updateH?id="+content.contentId;
-                return(
-                        <tr>
-                            <td>{content.contentId}</td>
-                            <td>{content.title}</td>
-                            <td>{content.kindName}</td>
-                            <td><input type="checkbox" name="" id="" checked={content.isTop} disabled="disabled" /></td>
-                            <td><input type="checkbox" name="" id="" checked={content.isRecommend} disabled="disabled" /></td>
-                            <td><input type="checkbox" name="" id="" checked={content.isSlide} disabled="disabled" /></td>
-                            <td><a href={modifyLink}>修改</a> <a href="javascript:;" className="delContent" alt={content.contentId}>删除</a></td>
-                        </tr>
-                )
-            })
-            return(
-                    <tbody>
-                        {flist}
-                    </tbody>
-            )
-        }
-    })
+
     var myCompent;
-    function getData() {
-        $.ajax("/content/list",{
-            success:function(data){
-                console.log(data);
-                myCompent=React.render(
-                        React.createElement(MyList,{"data":data.returnData.list}),
-                        document.getElementById("contetListContainer"),
-                        function(){
-                            $("#contetListContainer").prepend("<thead><tr><th>ID</th><th>标题</th><th>类别</th><th>置顶</th><th>推荐</th><th>幻灯片</th><th>操作</th></tr></thead>")
+    var searchObj={searchType:'list',searchIpt:'',searchBy:''};
+    var page={pageNum:0,pageSize:10};
+    var sortObj={order:"",sort:""};
+    function initData() {
+        myCompent=React.render(
+                React.createElement(MyList,{"data":[]}),
+                document.getElementById("contetListContainer"),
+                function(){
+                    $("#contetListContainer").prepend("<thead><tr><th class='alignCenter' width='40'>ID</th><th>标题</th><th width='60'>类别</th><th width='60' class='sortCol' data-id='isTop'>置顶</th><th width='60' class='sortCol' data-id='isRecommend'>推荐</th><th width='80' class='sortCol' data-id='isSlide'>幻灯片</th><th width='140'>操作</th></tr></thead>")
+                    $(".sortCol").click(function(){
+                        var sortCol=$(this).attr("data-id");
+                        var txt=$(this).text().substring(0,2);
+                        if(sortCol==sortObj.order){
+                            if($(this).hasClass("desc")){
+                                sortObj.sort="asc";
+                                $(this).html(txt+"&#8593;");
+                            }else{
+                                sortObj.sort="desc";
+                                $(this).html(txt+"&#8595;");
+                            }
+                            $(this).toggleClass("desc asc");
+                        }else{
+                            $(".sortCol").each(function(i,j){
+                                $(j).text($(j).text().substring(0,2));
+                            })
+                            sortObj.order=sortCol;
+                            $(".sortCol").removeClass(sortObj.sort);
+                            sortObj.sort="desc";
+                            $(this).addClass("desc");
+                            $(this).html(txt+"&#8595;");
                         }
-                )
-            }
-        })
+
+                        getData();
+                    })
+                }
+        )
     }
 
     $("#searchIpt").keyup(function(e){
@@ -91,49 +96,75 @@
     })
 
     function searchData(kindId){
-        var searchType,searchIpt;
         if(kindId!=undefined){
-            searchType="searchByKind";
-            searchIpt=kindId;
+            searchObj.searchBy="kind";
+            searchObj.searchIpt=kindId;
         }else {
-            searchType = $("#searchType").val() == "1" ? "searchByTitle" : "searchByTag";
-            searchIpt = $("#searchIpt").val();
+            searchObj.searchBy = $("#searchType").val() == "1" ? "title" : "tag";
+            searchObj.searchIpt = $("#searchIpt").val();
         }
+        searchObj.searchType="search";
         if(searchIpt.length==0){
             alert("搜索内容不能为空");
             return false;
         }
-        $.ajax("/content/"+searchType,{
-            data:{keyword:searchIpt},
-            success:function(data){
-                myCompent.setProps({"data":data.returnData.list});
-            }
-        })
+        page.pageNum=1;
+        getData();
+        changePageBtnState();
+    }
+
+    function getAllData(){
+        searchObj.searchIpt="";
+        searchObj.searchType="list";
+        page.pageNum=1;
+        getData();
     }
 
     function getPageData(n){
         if(n==1){
-            currentP++;
+            page.pageNum++;
             $(".prePage").removeClass("disabled");
         }else{
-            currentP--;
+            page.pageNum--;
             $(".nextPage").removeClass("disabled");
-            if(currentP==1){
-                $(".prePage").addClass("disabled");
-            }
         }
-        $.ajax("/content/list",{
-            data:{page:currentP},
+        if(page.pageNum==1){
+            $(".prePage").addClass("disabled");
+        }
+        getData();
+    }
+
+    function getData(){
+        var data={
+            page:page.pageNum,
+            keyword:searchObj.searchIpt,
+            size:page.pageSize,
+            order:sortObj.order,
+            sort:sortObj.sort,
+            searchBy:searchObj.searchBy
+        };
+        $.ajax("/content/"+searchObj.searchType,{
+            data:data,
             success:function(data){
+                changePageBtnState();
                 if(data.returnData.list.length>0) {
                     myCompent.setProps({"data": data.returnData.list});
                 }else{
                     $(".nextPage").addClass("disabled");
-                    currentP--;
-                    alert("到底了");
+                    page.pageNum--;
+                    alert("没有内容了");
                 }
+                window.location.hash=page.pageNum.toString();
             }
         })
+    }
+
+    function changePageBtnState() {
+        $(".prePage,.nextPage").removeClass("disabled");
+        if(page.pageNum<=1){
+            $(".prePage").addClass("disabled");
+        }
+        window.location.hash=page.pageNum.toString();
     }
 
     $("#contetListContainer").delegate(".delContent","click",function(){
@@ -151,7 +182,22 @@
             }
         })
     })
-    getData();
+
+    function getDataByHash(){
+        var hashP=window.location.hash;
+        if(hashP.length>1){
+            hashP=hashP.substring(hashP.indexOf("#")+1);
+            page.pageNum=parseInt(hashP);
+            getData(1);
+        }else{
+            page.pageNum=1;
+            getData();
+        }
+    }
+
+
+    initData();
+    getDataByHash();
 </script>
 </body>
 </html>

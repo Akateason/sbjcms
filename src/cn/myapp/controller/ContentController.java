@@ -7,6 +7,7 @@ import java.util.List;
 import cn.cms.model.Kind;
 import com.google.gson.Gson;
 import com.jfinal.core.Controller;
+import com.jfinal.core.JFinal;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -15,6 +16,7 @@ import cn.cms.model.CompleteContent;
 import cn.cms.model.Content;
 import cn.myapp.model.ResultObj;
 import cn.myapp.util.XtDate;
+import net.sf.morph.context.contexts.HttpServletContext;
 
 public class ContentController extends Controller {
 
@@ -227,6 +229,9 @@ public class ContentController extends Controller {
 	 *            默认为1, 
 	 * @param size
 	 *            默认 20
+	 * @param order
+	 * @param sort
+	 * 			  默认为desc
 	 * @return list
 	 * @throws ParseException
 	 */
@@ -234,14 +239,23 @@ public class ContentController extends Controller {
 		int kindId = getParaToInt("kind", 0);
 		int page = getParaToInt("page",1) ;
 		int size = getParaToInt("size", 20) ;
+		String strOrder=getPara("order","");
+		String strSort=getPara("sort","desc");
 
 		Page<Record> recordPage = null ;
-		if (kindId == 0) {
-			recordPage = Db.paginate(page, size, "select *","from content order by sendtime desc") ;			
-		} else {
-			recordPage = Db.paginate(page, size, "select *", "from content where kind = ? order by sendtime desc",kindId) ;
+		String sql_from="from content";
+		String sql_where="";
+		String sql_order=" order by ";
+		if (kindId != 0) {
+			sql_where = String.format(" where kind = ?",kindId) ;
 		}
-		
+		if(!strOrder.equals("")){
+			sql_order+=String.format("%s %s %s %s",strOrder,strSort,",","sendtime desc");
+		}else{
+			sql_order+="sendtime desc";
+		}
+		recordPage = Db.paginate(page, size, "select *",sql_from+sql_where+sql_order) ;
+
 		List<HashMap<String, Object>> list = dealList(recordPage.getList());
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("list", list) ;
@@ -353,23 +367,63 @@ public class ContentController extends Controller {
 	 * @param title
 	 * @param size
 	 *            默认 20
+	 * @param kind
+	 * @param page
+	 * 			  默认 1
+	 * @param keyword
+	 * @param order
+	 * @param sort
+	 * 			  默认 desc
+	 * @param by
 	 * @return list
 	 *
 	 */
-	public void searchByTitle() {
+	public void search() {
 		Gson gson = new Gson();
-		String title = getPara("keyword");
+		int kindId = getParaToInt("kind", 0);
+		int page = getParaToInt("page",1) ;
+		int size = getParaToInt("size", 20) ;
+		String keyword = getPara("keyword");
+		String strOrder=getPara("order","");
+		String strSort=getPara("sort","desc");
+		String searchBy=getPara("searchBy","");
+
 		ResultObj rb = null;
-		if (title.isEmpty()) {
-			rb = new ResultObj("0", "标题不能为空", null);
+		if (keyword.isEmpty() && kindId==0 && strOrder.isEmpty()) {
+			rb = new ResultObj("0", "查询参数不能为空", null);
 		} else {
-			List<Record> listRecord = Db.find("select * from content where title like '%" + title + "%'");
-			List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord);
-			String jsonStr = gson.toJson(list_completeContent);
-			@SuppressWarnings("unchecked")
-			List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class);
+			String sql_from="from content as c";
+			String sql_where=" where ";
+			switch (searchBy){
+				case "title":{
+					sql_where+="title like '%" + keyword + "%'";
+					break;
+				}
+				case "tag":{
+					sql_where+="contentId in (select contentId from tagRelation as tr left join tag as t on t.tagId=tr.tagId where t.name like '%"+ keyword + "%')";
+					break;
+				}
+				case "kind":{
+					sql_where+="kind="+keyword;
+					break;
+				}
+				default:{
+					rb = new ResultObj("0", "查询参数错误", null);
+					renderJson(rb);
+					return ;
+				}
+			}
+			String sql_order=" order by ";
+			if(!strOrder.equals("")){
+				sql_order+=String.format("%s %s %s %s",strOrder,strSort,",","sendtime desc");
+			}else{
+				sql_order+="sendtime desc";
+			}
+			Page<Record> recordPage = Db.paginate(page, size, "select *",sql_from+sql_where+sql_order) ;
+
+			List<HashMap<String, Object>> list = dealList(recordPage.getList());
 			HashMap<String, Object> map = new HashMap<>();
-			map.put("list", list);
+			map.put("list", list) ;
 			rb = new ResultObj(map);
 		}
 		renderJson(rb);
@@ -386,20 +440,29 @@ public class ContentController extends Controller {
 	 */
 	public void searchByTag() {
 		Gson gson = new Gson();
+		int kindId = getParaToInt("kind", 0);
+		int page = getParaToInt("page",1) ;
+		int size = getParaToInt("size", 20) ;
 		String tag = getPara("keyword");
+		String strOrder=getPara("order","");
+		String strSort=getPara("sort","desc");
 		ResultObj rb = null;
 		if (tag.isEmpty()) {
 			rb = new ResultObj("0", "标题不能为空", null);
 		} else {
-			List<Record> listRecord = Db
-					.find("select c.* from content as c where contentId in (select contentId from tagRelation as tr left join tag as t on t.tagId=tr.tagId where t.name like '%"
-							+ tag + "%')");
-			List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord);
-			String jsonStr = gson.toJson(list_completeContent);
-			@SuppressWarnings("unchecked")
-			List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class);
+			String sql_from="from content as c";
+			String sql_where=" where contentId in (select contentId from tagRelation as tr left join tag as t on t.tagId=tr.tagId where t.name like '%"+ tag + "%')";
+			String sql_order=" order by";
+			if(!strOrder.equals("")){
+				sql_order+=String.format("%s %s %s %s",strOrder,strSort,",","sendtime desc");
+			}else{
+				sql_order+="sendtime desc";
+			}
+			Page<Record> recordPage = Db.paginate(page, size, "select *",sql_from+sql_where+sql_order) ;
+
+			List<HashMap<String, Object>> list = dealList(recordPage.getList());
 			HashMap<String, Object> map = new HashMap<>();
-			map.put("list", list);
+			map.put("list", list) ;
 			rb = new ResultObj(map);
 		}
 		renderJson(rb);
@@ -416,18 +479,17 @@ public class ContentController extends Controller {
 	 */
 	public void searchByKind() {
 		Gson gson = new Gson();
-		String kind = getPara("keyword");
+		int kindId = getParaToInt("keyword", 0);
+		int page = getParaToInt("page",1) ;
+		int size = getParaToInt("size", 20) ;
 		ResultObj rb = null;
-		if (kind.isEmpty()) {
-			rb = new ResultObj("0", "标题不能为空", null);
+		if (kindId==0) {
+			rb = new ResultObj("0", "类型不能为空", null);
 		} else {
-			List<Record> listRecord = Db.find("select * from content where kind=?", kind);
-			List<CompleteContent> list_completeContent = CompleteContent.getCompleteListWithRecordList(listRecord);
-			String jsonStr = gson.toJson(list_completeContent);
-			@SuppressWarnings("unchecked")
-			List<HashMap<String, Object>> list = gson.fromJson(jsonStr, List.class);
+			Page<Record> recordPage = Db.paginate(page,size,"select *","from content where kind=? order by sendtime desc", kindId);
+			List<HashMap<String, Object>> list = dealList(recordPage.getList());
 			HashMap<String, Object> map = new HashMap<>();
-			map.put("list", list);
+			map.put("list", list) ;
 			rb = new ResultObj(map);
 		}
 		renderJson(rb);
@@ -449,6 +511,7 @@ public class ContentController extends Controller {
 	}
 
 	public void addH() {
+
 		List<Kind> list = Kind.allKind();
 		setAttr("kinds", list);
 		render("addContent.html");
@@ -467,6 +530,27 @@ public class ContentController extends Controller {
 		List<Kind> list = Kind.allKind();
 		setAttr("kinds", list);
 		render("updateContent.html");
+	}
+
+	public void showContentH(){
+		int contentId = getParaToInt("contentId", 0);
+		if (contentId == 0) {
+			ResultObj resultObj = new ResultObj("1", "contentId不能为空", null);
+			renderJson(resultObj);
+			return;
+		}
+
+		Record record = Db.findFirst("select * from content where contentId = ? ;", contentId);
+		if (record == null) {
+			ResultObj resultObj = new ResultObj("2", "contentId不存在", null);
+			renderJson(resultObj);
+			return;
+		}
+
+		CompleteContent completeContent = CompleteContent.getCompleteContentWithRecord(record);
+		completeContent.setCreatetime(completeContent.getCreatetime());
+		setAttr("content",completeContent);
+		render("showContent.html");
 	}
 
 }
