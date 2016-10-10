@@ -21,10 +21,17 @@ public class TagController extends Controller {
 	 * @return success 1001
 	 */
 	public void add() {		
-		String tagName = getPara("name") ;		
+		String tagName = getPara("name","") ;
+		
+		if (tagName.length() == 0) {
+			ResultObj resultObj = new ResultObj("1", "标签不能为空", null) ;
+			renderJson(resultObj);			
+			return ;
+		}
+		
 		long tagExistCount = Db.queryLong("select count(*) from tag where name = ? ;" , tagName) ;
 		if (tagExistCount > 0) {
-			ResultObj resultObj = new ResultObj("1", "该标签已经存在", null) ;
+			ResultObj resultObj = new ResultObj("2", "该标签已经存在", null) ;
 			renderJson(resultObj);			
 			return ;
 		}
