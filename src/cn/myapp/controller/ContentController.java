@@ -360,22 +360,19 @@ public class ContentController extends Controller {
 	/**
 	 * 根据标题获取内容列表
 	 * 
-	 * @param title
 	 * @param size
 	 *            默认 20
-	 * @param kind
 	 * @param page
 	 * 			  默认 1
 	 * @param keyword
 	 * @param order
 	 * @param sort
 	 * 			  默认 desc
-	 * @param by
+	 * @param searchBy
 	 * @return list
 	 *
 	 */
 	public void search() {
-		int kindId = getParaToInt("kind", 0);
 		int page = getParaToInt("page",1) ;
 		int size = getParaToInt("size", 20) ;
 		String keyword = getPara("keyword");
@@ -384,7 +381,7 @@ public class ContentController extends Controller {
 		String searchBy=getPara("searchBy","");
 
 		ResultObj rb = null;
-		if (keyword.isEmpty() && kindId==0 && strOrder.isEmpty()) {
+		if (keyword.isEmpty() && searchBy.isEmpty()) {
 			rb = new ResultObj("0", "查询参数不能为空", null);
 		} else {
 			String sql_from="from content as c";
