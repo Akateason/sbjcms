@@ -169,7 +169,7 @@
 
     $("#contetListContainer").delegate(".delContent","click",function(){
         var that=$(this).closest("tr");
-        var id=$(this).attr("alt");
+        var id=$(this).attr("name");
         $.ajax("/content/del",{
             data:{contentId:id},
             success:function(data){

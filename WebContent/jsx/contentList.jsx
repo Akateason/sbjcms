@@ -13,7 +13,7 @@ var MyList=React.createClass({
                     <td><input type="checkbox" name="" id="" checked={content.isTop} disabled="disabled" /></td>
                     <td><input type="checkbox" name="" id="" checked={content.isRecommend} disabled="disabled" /></td>
                     <td><input type="checkbox" name="" id="" checked={content.isSlide} disabled="disabled" /></td>
-                    <td><a href={modifyLink}>修改</a> <a href="javascript:;" className="delContent" alt={content.contentId}>删除</a></td>
+                    <td><a href={modifyLink}>修改</a> <a href="javascript:;" className="delContent" name={content.contentId}>删除</a></td>
                 </tr>
             )
         })
