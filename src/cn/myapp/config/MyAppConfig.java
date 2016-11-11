@@ -32,7 +32,8 @@ public class MyAppConfig extends JFinalConfig {
 	 * @see com.jfinal.config.JFinalConfig#configRoute(com.jfinal.config.Routes)
 	 */
 	@Override
-	public void configRoute(Routes me) {		
+	public void configRoute(Routes me) {	
+		me.add("/apns",APNSController.class,"/") ;
 		me.add("/content",ContentController.class,"/") ;
 		me.add("/kind",KindController.class,"/") ;
 		me.add("/images",ImagesController.class) ;
