@@ -27,7 +27,6 @@ public class APNSUtil {
 	 * @return
 	 */
 	public boolean sendNoteToAll(String alert, int badge, List<String> tokens) {
-
 		try {
 			PushNotificationPayload payLoad = new PushNotificationPayload();
 			payLoad.addAlert(alert); // 消息内容

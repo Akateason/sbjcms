@@ -1,5 +1,7 @@
 package cn.myapp.controller;
 
+import java.util.List;
+
 import com.jfinal.core.Controller;
 
 import cn.cms.model.Device;
@@ -12,6 +14,7 @@ public class APNSController extends Controller {
 	/**
 	 * add 添加DeviceToken
 	 * @param deviceToken
+	 * @return success 1001
 	 */
 	public void add() {
 		String deviceToken = getPara("deviceToken", null);
@@ -44,7 +47,7 @@ public class APNSController extends Controller {
 	 * @param alert  	  push文字内容
 	 * @param badge		  更新的数量
 	 * 
-	 * @return success
+	 * @return success 1001
 	 * 
 	 */	
 	public void send2Single() {
@@ -58,14 +61,14 @@ public class APNSController extends Controller {
 		
 		String alert = getPara("alert", null);  // push文字内容
 		if (alert == null) {
-			ResultObj resultObj = new ResultObj("1", "alert不能为空", null);
+			ResultObj resultObj = new ResultObj("2", "alert不能为空", null);
 			renderJson(resultObj);
 			return;
 		}
 		
 		int badge = getParaToInt("badge", 0) ; // 图标小红圈的数值 
 		if (badge == 0) {
-			ResultObj resultObj = new ResultObj("1", "badge不能为0", null);
+			ResultObj resultObj = new ResultObj("3", "badge不能为0", null);
 			renderJson(resultObj);
 			return;
 		}		
@@ -77,7 +80,7 @@ public class APNSController extends Controller {
 		}
 		else {
 			renderJson(new ResultObj(null)) ;
-		}	
+		}
 	}
 	
 	
@@ -99,20 +102,25 @@ public class APNSController extends Controller {
 		
 		int badge = getParaToInt("badge", 0) ; // 图标小红圈的数值 
 		if (badge == 0) {
-			ResultObj resultObj = new ResultObj("1", "badge不能为0", null);
+			ResultObj resultObj = new ResultObj("2", "badge不能为0", null);
 			renderJson(resultObj);
 			return;
 		}	
 		
-//		APNSUtil util = new APNSUtil() ;
-//		boolean success = util.sendNoteToAll(alert, badge, tokens) ;		
-//		if (success) {
-//			renderJson(new ResultObj("发送成功")) ;
-//		}
-//		else {
-//			renderJson(new ResultObj(null)) ;
-//		}
+		List<String> tokens = Device.allDeviceToken() ;
+		if (tokens == null) {
+			renderJson(new ResultObj("1", "没有device,无法发送", null)) ;
+			return ;
+		}
 		
+		APNSUtil util = new APNSUtil() ;
+		boolean success = util.sendNoteToAll(alert, badge, tokens) ;
+		if (success) {
+			renderJson(new ResultObj("发送成功")) ;
+		}
+		else {
+			renderJson(new ResultObj(null)) ;
+		}		
 	}
 
 }
