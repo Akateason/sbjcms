@@ -44,7 +44,7 @@ public class APNSUtil {
 			PushedNotification notification = pushManager.sendNotification(device, payLoad, true);
 			notifications.add(notification);
 			pushManager.stopConnection();
-
+			
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,7 +70,7 @@ public class APNSUtil {
 			PushNotificationManager pushManager = new PushNotificationManager();
 			// true：表示的是产品发布推送服务 false：表示的是产品测试推送服务
 			pushManager.initializeConnection(
-					new AppleNotificationServerBasicImpl(certificatePath, certificatePassword, true));
+					new AppleNotificationServerBasicImpl(certificatePath, certificatePassword, false));
 			List<PushedNotification> notifications = new ArrayList<PushedNotification>();
 			// 发送push消息
 			Device device = new BasicDevice();
