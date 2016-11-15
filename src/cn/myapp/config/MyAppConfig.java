@@ -36,6 +36,7 @@ public class MyAppConfig extends JFinalConfig {
 		me.add("/apns",APNSController.class,"/") ;
 		me.add("/content",ContentController.class,"/") ;
 		me.add("/kind",KindController.class,"/") ;
+		me.add("/remind",RemindController.class,"/") ;
 		me.add("/images",ImagesController.class) ;
 		me.add("/tag",TagController.class,"/") ;
 		me.add("/file",FileController.class,"/");
