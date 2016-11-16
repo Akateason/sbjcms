@@ -33,6 +33,8 @@ public class MyAppConfig extends JFinalConfig {
 	 */
 	@Override
 	public void configRoute(Routes me) {	
+		me.add("/login",LoginController.class,"/") ;
+		me.add("/sms",SMSController.class,"/") ;
 		me.add("/apns",APNSController.class,"/") ;
 		me.add("/content",ContentController.class,"/") ;
 		me.add("/kind",KindController.class,"/") ;
