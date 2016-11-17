@@ -1,7 +1,5 @@
 package cn.myapp.controller;
 
-import java.util.HashMap;
-
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -32,7 +30,7 @@ public class LoginController extends Controller {
 		else {
 			aUser = (User)aUser.fetchFromRecord(rec) ;
 			returnUserID = aUser.getUserId() ;
-		} 
+		}
 		System.out.println(returnUserID) ;
 		renderJson(new ResultObj(returnUserID)) ;
 	}
