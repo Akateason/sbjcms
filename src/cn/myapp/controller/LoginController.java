@@ -34,9 +34,9 @@ public class LoginController extends Controller {
 			returnUserID = aUser.getUserId() ;
 		}
 		System.out.println(returnUserID) ;
-		HashMap<String, Long> map = new HashMap<>() ;
-		map.put("userId", returnUserID) ;
-		renderJson(new ResultObj(returnUserID)) ;
+		HashMap<String, Long> resultMap = new HashMap<>() ;
+		resultMap.put("userId", returnUserID) ;
+		renderJson(new ResultObj(resultMap)) ;
 	}
 	
 }
