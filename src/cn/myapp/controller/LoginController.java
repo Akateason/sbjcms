@@ -1,5 +1,7 @@
 package cn.myapp.controller;
 
+import java.util.HashMap;
+
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -32,6 +34,8 @@ public class LoginController extends Controller {
 			returnUserID = aUser.getUserId() ;
 		}
 		System.out.println(returnUserID) ;
+		HashMap<String, Long> map = new HashMap<>() ;
+		map.put("userId", returnUserID) ;
 		renderJson(new ResultObj(returnUserID)) ;
 	}
 	
