@@ -33,6 +33,7 @@ public class MyAppConfig extends JFinalConfig {
 	 */
 	@Override
 	public void configRoute(Routes me) {	
+		me.add("/sign",SignController.class,"/") ;
 		me.add("/login",LoginController.class,"/") ;
 		me.add("/sms",SMSController.class,"/") ;
 		me.add("/apns",APNSController.class,"/") ;
@@ -41,8 +42,8 @@ public class MyAppConfig extends JFinalConfig {
 		me.add("/remind",RemindController.class,"/") ;
 		me.add("/images",ImagesController.class) ;
 		me.add("/tag",TagController.class,"/") ;
-		me.add("/file",FileController.class,"/");
-		me.add("/",ManageController.class);
+		me.add("/file",FileController.class,"/") ;
+		me.add("/",ManageController.class) ;
 	}
 	
 	/* (non-Javadoc)
