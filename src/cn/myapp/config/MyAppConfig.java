@@ -44,6 +44,9 @@ public class MyAppConfig extends JFinalConfig {
 		me.add("/tag",TagController.class,"/") ;
 		me.add("/file",FileController.class,"/") ;
 		me.add("/",ManageController.class) ;
+		
+		// 微信活动
+		me.add("/luck", LuckyController.class,"/") ;
 	}
 	
 	/* (non-Javadoc)
